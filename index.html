@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SISB Fest Stratagem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --ink: #1e2933;
+  --muted: #56626a;
+  --paper: #f2f3ef;
+  --line: #d5dad6;
+  --deep: #102c34;
+  --mint: #c9f49e;
+  --orange: #ffad78;
+  --body: "DM Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 500 16px/1.55 var(--body); }
+.shell { max-width: 1480px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 58px); }
+.mast { background: var(--deep); color: #f5faf7; border-bottom: 4px solid var(--mint); }
+.mast .shell { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding-block: 13px; }
+.wordmark { display: flex; align-items: center; gap: 13px; }
+.mark { width: 34px; height: 34px; flex: 0 0 34px; background: repeating-linear-gradient(90deg,var(--mint) 0 3px,transparent 3px 6px); transform: skew(-12deg); }
+h1,h2,h3 { margin: 0; }
+h1,h2 { font-family: "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: -.045em; }
+.mast h1 { font-size: clamp(1.45rem, 3vw, 2.18rem); line-height: 1.05; }
+.tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.tools button { background: transparent; border-color: #63808a; color: #f7fdf9; min-height: 38px; }
+.tools button:hover { background: var(--mint); color: var(--deep); border-color: var(--mint); }
+main { padding-top: 22px; padding-bottom: 48px; }
+.kpis { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); background: white; border: 1px solid var(--line); margin-bottom: 22px; }
+.kpi { padding: 12px clamp(10px,2vw,22px); border-inline-end: 1px solid var(--line); }
+.kpi:last-child { border-inline-end: 0; }.kpi:nth-child(2) { background: var(--mint); }
+.kpi small { display: block; font-size: .77rem; font-weight: 800; }
+.kpi strong { display: block; font: 600 clamp(1rem,3vw,1.7rem)/1.35 var(--mono); font-variant-numeric: tabular-nums; }
+.workbench { display: grid; grid-template-columns: 178px minmax(0,1fr); gap: 22px; align-items: start; }
+.rail { position: sticky; top: 18px; display: grid; gap: 2px; border-top: 1px solid var(--line); }
+.rail span { display: flex; align-items: center; gap: 10px; padding: 10px 8px; color: var(--muted); border-bottom: 1px solid var(--line); font-size: .88rem; font-weight: 800; }
+.rail b { font: 600 .72rem var(--mono); }
+.rail .on { color: #15332b; background: var(--mint); border-color: #a8d984; }
+.rail .done { color: #306852; }
+.panel { min-width: 0; background: #fff; border: 1px solid var(--line); padding: clamp(14px,3.5vw,32px); }
+h2 { font-size: clamp(1.9rem,4vw,3.2rem); line-height: 1; margin-bottom: 12px; }
+h3 { font-size: 1.14rem; line-height: 1.25; margin-bottom: 5px; }
+.panel > h3 { margin-top: 24px; }
+.panel > p { max-width: 80ch; margin: 8px 0 14px; }
+.grid,.formrow { display: grid; gap: 0; margin: 15px 0; border-top: 1px solid var(--line); }
+.grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.card { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 15px; border: solid var(--line); border-width: 0 1px 1px 0; background: #fff; transition: background .15s ease; }
+.card:nth-child(odd) { border-left-width: 1px; }.card:hover { background: #f8faf7; }
+.card p { margin: 0 0 7px; color: var(--muted); font-size: .9rem; }
+.card .actions { margin-top: auto; padding-top: 6px; }.card > button { margin-top: auto; }
+[data-phase="0"] .panel > .grid { display: block; border: 0; }
+[data-phase="0"] .card { display: grid; grid-template-columns: minmax(125px,.72fr) minmax(150px,1.28fr) minmax(100px,.65fr) auto; gap: 10px 14px; align-items: center; padding: 15px 0; border-width: 1px 0 0; }
+[data-phase="0"] .card:last-child { border-bottom-width: 1px; }
+[data-phase="0"] .card label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+[data-phase="0"] .card h3,[data-phase="0"] .card p { margin: 0; }
+[data-phase="0"] .card .actions { margin: 0; padding: 0; min-width: 105px; }
+[data-phase="0"] .card .check,[data-phase="0"] .card > .warn { grid-column: 2 / -1; grid-row: 2; padding: 4px 9px; margin: 0; }
+[data-phase="1"] .panel > .table thead th:nth-child(2) { background: #d8f2c4; }
+[data-phase="1"] .panel > .table thead th:nth-child(3) { background: #f8dfcd; }
+[data-phase="1"] .panel > .table td:first-child { font: 600 .95rem var(--mono); }
+[data-phase="5"] .panel { background: #122f37; color: #fff; border-color: #122f37; }
+[data-phase="5"] .panel > p { color: #d0e0e1; }
+[data-phase="5"] .panel .incident { background: #ffb286; color: #251f18; border: 0; border-left: 8px solid #e98548; }
+[data-phase="5"] .panel .incident h3 { font-size: clamp(1.4rem,3.2vw,2.3rem); }
+[data-phase="5"] .panel .grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; border: 0; }
+[data-phase="5"] .panel .card { background: #f8faf5; color: var(--ink); border: 0; border-top: 4px solid #7bcbb2; }
+[data-phase="5"] .table { color: var(--ink); background: white; }
+[data-phase="6"] .panel > .ok,[data-phase="6"] .panel > .warn { padding: 18px; }
+[data-phase="6"] .panel > .ok b,[data-phase="6"] .panel > .warn b { font-size: clamp(1.05rem,2.6vw,1.6rem); }
+.formrow { grid-template-columns: repeat(auto-fit,minmax(min(100%,160px),1fr)); gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+button,input,select { font: inherit; }
+button { border: 1px solid #a9b6b0; background: white; color: var(--ink); border-radius: 4px; padding: 8px 12px; min-height: 42px; font-weight: 800; cursor: pointer; }
+button:hover:not(:disabled) { background: #eaf0e9; }
+button.primary { background: var(--deep); color: white; border-color: var(--deep); }
+button.primary:hover:not(:disabled) { background: #205348; }.primary:disabled { background: #43575a; }
+button.selected { background: var(--mint); border-color: #93c176; }
+button:disabled { opacity: .65; cursor: default; }button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible { outline: 3px solid #b54519; outline-offset: 2px; }
+input[type=number],select { width: 100%; max-width: 245px; padding: 8px; border: 1px solid #a9b6b0; border-radius: 4px; background: white; color: var(--ink); }
+input[type=number] { font-family: var(--mono); } label { display: block; font-weight: 800; font-size: .9rem; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sticky { position: sticky; bottom: 0; background: #fff; padding-block: 14px 9px; margin-top: 15px; border-top: 1px solid var(--line); z-index: 2; }
+.table { overflow: auto; margin-block: 10px 16px; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+td,th { padding: 9px 11px; border: 1px solid var(--line); }
+th { background: #e7ebe6; font-size: .85rem; }tbody tr:nth-child(even) { background: #f7f8f5; }
+.eyebrow { font: 600 .74rem/1.5 var(--mono); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+.muted { color: var(--muted); font-size: .9rem; }
+.warn,.ok,.incident { padding: 12px; margin: 11px 0; border-left: 4px solid; }
+.warn { background: #fce8dc; color: #802e15; border-color: #c45734; }
+.ok { background: #e8f5dc; color: #214e31; border-color: #71a474; }
+.check { font-weight: 800; color: #205c42; background: #e8f5dc; }
+a { color: #155d59; }summary { font-weight: 800; cursor: pointer; }
+dialog { max-width: min(940px,95vw); max-height: 90vh; overflow: auto; border: 1px solid var(--line); padding: 20px; color: var(--ink); background: white; }
+dialog::backdrop { background: #12262baf; }dialog form { float: right; margin-left: 10px; }dialog img { width: 100%; display: block; margin: 10px 0; }dialog img[hidden] { display: none; }
+@media (max-width: 1000px) {
+  .workbench { grid-template-columns: minmax(0,1fr); gap: 11px; }
+  .rail { position: static; display: flex; overflow-x: auto; gap: 0; }
+  .rail span { flex: 1 0 auto; white-space: nowrap; }
+}
+@media (max-width: 720px) {
+  .grid,[data-phase="5"] .panel .grid { grid-template-columns: minmax(0,1fr); }
+  .card { border-left-width: 1px; }
+  [data-phase="0"] .card { grid-template-columns: minmax(0,1fr) minmax(100px,1fr); }
+  [data-phase="0"] .card h3,[data-phase="0"] .card p,[data-phase="0"] .card .check,[data-phase="0"] .card > .warn { grid-column: 1/-1; grid-row: auto; }
+}
+@media (max-width: 560px) {
+  .kpis { grid-template-columns: repeat(2,minmax(0,1fr)); margin-bottom: 12px; }
+  .kpi:nth-child(1),.kpi:nth-child(2) { border-bottom: 1px solid var(--line); }
+  .kpi:nth-child(2) { border-right: 0; }
+  .tools button { font-size: .8rem; padding: 7px; }
+}
+:root{--paper:#e8eff3;--deep:#192f46;--mint:#b8ee8c}
+.mast{border:0;background:#fff;color:#21364b;box-shadow:0 2px 15px #17384d12}
+.mast .shell{min-height:64px}.mast h1{font-size:1.65rem}.tools button{color:#344c65;border-color:#cfdae4}
+.mark{background:repeating-linear-gradient(90deg,#499e89 0 3px,transparent 3px 6px)}
+#festival-world{overflow:hidden;border:1px solid #96b5b5;border-radius:20px;background:#d0e7d5;margin-bottom:18px;box-shadow:0 9px 25px #223d4a20}
+.world-top{background:#ffffffee;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 18px}
+.world-top small,.world-top strong{display:block}.world-top small{font-size:10px;letter-spacing:.12em;color:#658275}.world-top strong{font-size:19px}
+.world-actions{display:flex;flex-wrap:wrap;gap:7px}.world-actions button{border-radius:99px;min-height:36px;font-size:13px;background:#f4f7f3}
+.world-canvas{position:relative}#festival-canvas{display:block;width:100%;height:clamp(340px,55vw,580px);touch-action:none;cursor:grab}
+.world-tip{position:absolute;left:15px;top:12px;background:#fffdf0e8;border-radius:99px;padding:6px 12px;font-size:12px;pointer-events:none}
+.world-bottom{background:#ffffffdf;padding:10px 16px;display:flex;flex-wrap:wrap;gap:12px;font-size:12px}
+.world-bottom span:first-child{color:#647e36}.world-bottom span:nth-child(2){color:#4e8b72}#map-status{margin-left:auto;font-weight:700}
+.plot-panel:not(:empty){position:absolute;right:12px;top:12px;width:220px;padding:17px;background:#fffffff2;box-shadow:0 5px 20px #2143372b;border-radius:14px;border:1px solid #bed1bf}
+.plot-panel small{color:#688075;font-size:10px}.plot-panel h3{margin-top:5px}.plot-panel p{font-size:13px}.plot-close{float:right;min-height:24px;padding:0 6px;border:0;font-size:22px}
+.kpis{border-radius:12px;overflow:hidden}.kpi{padding:10px 14px}.kpi strong{font-size:21px}.panel{border-radius:14px}.rail{border:0;gap:6px}.rail span{border-radius:10px;border:0;background:#dae5ea;padding:12px}
+.rail .on{background:#233d55;color:#fff}.card{border-radius:9px;margin:4px;border:1px solid var(--line)!important}.grid{border:0}button{border-radius:8px}
+#build-drawer{scroll-margin-top:12px}.panel h2{font-size:2rem}
+@media(max-width:650px){.world-top{align-items:flex-start;flex-direction:column}.world-actions button{font-size:11px;padding:5px 8px}.plot-panel:not(:empty){width:175px;top:44px;padding:11px}.world-tip{font-size:10px}.world-bottom{font-size:10px}#map-status{margin-left:0}}
+</style>
+
+<style>
+body{background:#101d30;color:#ecf2ff;font-family:'DM Sans',sans-serif}
+.mast{background:#14253c;color:white;border-bottom:1px solid #355172}.mast .tools button{color:#d5e8ff;border-color:#46617e}
+.workbench{gap:18px}.panel{background:#1b3049;color:#ecf2ff;border:1px solid #3d5976;padding:24px;box-shadow:0 12px 32px #050b1655}
+.panel h2{color:#fff}.panel p,.muted{color:#becfe4}.panel a{color:#89e4df}
+.rail{align-self:start;gap:9px}.rail button{display:flex;align-items:center;text-align:left;gap:12px;padding:14px;background:#1b3049;color:#c4d4e9;border:1px solid #38516c;border-radius:12px;box-shadow:0 4px 0 #091321}
+.rail button b{display:grid;place-items:center;background:#304966;border-radius:8px;width:30px;height:30px}
+.rail button.on{background:#f4bd66;color:#203047;border-color:#ffdfa1}.rail button.on b{background:#ffe1a8}
+.kpis{background:#14253c;border:1px solid #3b5572;margin-bottom:18px}.kpi{background:transparent;color:#b7cce4}.kpi strong{color:#fff}
+.grid,[data-phase="0"] .panel .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:16px;border:0}
+.card,[data-phase="0"] .card{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin:0;padding:20px;background:linear-gradient(145deg,#304b6b,#21344e);border:1px solid #54708e!important;border-top:5px solid #71d4bd!important;border-radius:16px;box-shadow:0 7px 0 #0d1d32;transition:transform .18s,box-shadow .18s}
+.card:nth-child(3n+2){border-top-color:#c5a0ff!important}.card:nth-child(3n){border-top-color:#ffc777!important}.card:hover{transform:translateY(-3px);box-shadow:0 10px 0 #0d1d32}
+.card h3{font-size:23px;color:white}.card p{line-height:1.5}
+[data-phase="0"] .card label{position:static;width:auto;height:auto;overflow:visible;clip-path:none}
+input,select{background:#0f2037;color:white;border:1px solid #66809e;border-radius:9px;padding:12px;max-width:100%;width:100%}
+button{background:#d9e6f4;color:#173149;border:1px solid #a9bfd5;border-radius:10px;box-shadow:0 3px 0 #0a172955;transition:transform .15s}button:active{transform:translateY(2px)}button.primary,.card button{background:#81e3c8;color:#103d37;border-color:#b7ffec}.selected{background:#ffc76b!important;color:#263449!important}
+.sticky{background:#14253cf2;border:1px solid #4b6481;border-radius:12px;padding:16px;margin-top:22px}
+.table{border-radius:12px;overflow:auto;background:#f2f6fc;color:#20334b}.table td{padding:16px}.warn{background:#ffdeb0;color:#674316;padding:12px;border-radius:8px}.check,.ok{color:#184a39}
+details>summary{list-style:none;margin:20px 0 12px}details>summary::-webkit-details-marker{display:none}
+#festival-world{box-shadow:0 12px 35px #0005}.world-top,.world-bottom{color:#294e45}
+@media(max-width:700px){.rail{display:grid;grid-template-columns:repeat(3,1fr)}.rail button{font-size:11px;padding:8px;gap:5px}.rail button b{width:22px;height:22px}.panel{padding:14px}}
+</style>
+
+<style>
+:root{color-scheme:dark;--ink:#fff7ea;--muted:#bfb5d9;--line:#5d467d}
+body{background:radial-gradient(ellipse at top left,#523880 0,transparent 45%),radial-gradient(ellipse at bottom right,#643151,transparent 50%),#171329;color:#fff7ea}
+.shell{max-width:1600px;width:95%}
+.mast{background:#181126e8;backdrop-filter:blur(16px);border-bottom:2px solid #8260b7}.mast .shell{min-height:86px}.mast h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(22px,3vw,38px);letter-spacing:-1.5px;color:#ffdd93}
+.mark{background:#fe837f;width:28px;height:34px;transform:rotate(-12deg);border-radius:8px;box-shadow:7px 3px #cbb4ff}
+main.shell{display:grid;grid-template-columns:minmax(300px,.75fr) minmax(580px,1.65fr);gap:22px;align-items:start;padding-top:24px}
+.kpis{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;border:0;background:none;overflow:visible;margin:0}
+.kpi{background:#2b2242;border:1px solid #785a9a;border-radius:18px;padding:15px 20px;box-shadow:0 6px #100c1e}
+.kpi:first-child{background:#ffdc8d;color:#563719}.kpi:first-child strong{color:#362643}.kpi strong{font-family:'Bricolage Grotesque';font-size:30px}.kpi small{font-size:12px;letter-spacing:.03em}
+#festival-world{grid-column:1;grid-row:2;position:sticky;top:18px;border:2px solid #b695de;border-radius:24px;box-shadow:0 10px #100c1e;overflow:hidden}
+.world-top{background:#f2dfc8;display:block;padding:20px}.world-top strong{font-family:'Bricolage Grotesque';font-size:30px}.world-actions{margin-top:15px}.world-actions button{background:#fff6e6}
+#festival-canvas{height:440px}.world-tip{top:auto;bottom:6px;left:6px;font-size:10px}.world-bottom{background:#f2dfc8}.plot-panel:not(:empty){top:10px;width:195px;color:#234c43}
+.workbench{grid-column:2;grid-row:2;display:block;min-width:0}
+.rail{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.rail button{background:#332447;border-color:#72568c;box-shadow:0 4px #100c1e;border-radius:13px;min-height:56px;padding:9px;font-size:12px}.rail button b{background:#50366c;color:#ecd9ff;border-radius:50%;flex-shrink:0}
+.rail button.on{background:#ff988e;border-color:#ffb7a8;color:#38213f;box-shadow:0 4px #a94d70}.rail button.on b{background:#ffe3b5;color:#41244f}
+.panel{background:#241c35;border:1px solid #6c508c;border-radius:24px;padding:24px;box-shadow:0 9px #100c1e}
+.panel h2{font-family:'Bricolage Grotesque';font-size:clamp(28px,3vw,44px);letter-spacing:-1.4px;line-height:1.05;color:#ffe2b2}.panel>p{font-size:14px;line-height:1.6}
+.grid,[data-phase="0"] .panel .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.card,[data-phase="0"] .card{padding:0 17px 18px;gap:11px;border:1px solid #8161a4!important;border-top:0!important;border-radius:19px;overflow:hidden;background:#38284f;box-shadow:0 6px #140e22}
+.card-art{display:block;width:calc(100% + 34px);height:130px;object-fit:cover;margin:0 -17px 3px;background:#49316c}
+.card:nth-child(3n+2){background:#293a50}.card:nth-child(3n){background:#4a2f42}
+.card h3{font-family:'Bricolage Grotesque';font-size:24px;line-height:1.1;color:#fff2d8;letter-spacing:-.6px}.card p{font-size:13px;color:#d9cfe6;margin:0}
+.card button{margin-top:auto;background:#ffd28a;color:#422c42;border:1px solid #ffe9b5;box-shadow:0 4px #ba8059;font-size:13px}
+.card:has(.selected),.card:has([data-release]){outline:3px solid #a9e7b4;outline-offset:1px}.selected{background:#a9e7b4!important}
+input,select{background:#1b142c;border:1px solid #8b71a1;color:#fff1d4;font-size:14px}
+.sticky{background:#31213ded;border:1px solid #8d6a9c;border-radius:16px;backdrop-filter:blur(12px)}button.primary{background:#ff978e;border-color:#ffcab1;color:#3b2342;font-size:16px;padding:13px 22px}
+.table{background:#f8eeda;color:#392c49}.table th{background:#dbc2ef;color:#36254d}.table td{border-color:#cbb6d8}
+.ok,.check{background:#b9e8c6;color:#254634;border-radius:13px;padding:14px}.warn{background:#ffcd9a;color:#613646}.incident{background:#583657;border:1px solid #e19b9f;border-radius:18px}
+@keyframes cardEnter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:cardEnter .3s ease both}.card:nth-child(2n){animation-delay:.04s}
+@media(min-width:1500px){.grid,[data-phase="0"] .panel .grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1000px){main.shell{display:block}.kpis{margin-bottom:18px}#festival-world{position:relative;top:0;margin-bottom:22px}#festival-canvas{height:440px}.world-top{display:flex}.world-actions{margin:0}.rail{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.shell{width:94%}.mast .shell{min-height:70px}.kpis{grid-template-columns:repeat(2,1fr)}.kpi strong{font-size:25px}.grid,[data-phase="0"] .panel .grid{grid-template-columns:1fr}.panel{padding:16px}.rail button{font-size:10px}.world-top{display:block}.world-actions{margin-top:10px}.card-art{height:155px}}
+@media(prefers-reduced-motion:reduce){.card{animation:none;transition:none}}
+</style>
+<style>.ok p{color:#254634}.ok button{margin-top:8px}</style>
+<style>
+/* The app wrapper owns the layout; its parent has only one child. */
+html{scroll-padding-top:16px}
+body{margin:0;min-width:320px}
+.shell{width:100%;max-width:1800px;margin-inline:auto;padding-inline:24px;box-sizing:border-box}
+main.shell{display:block;padding-top:20px}
+#app{display:flex;flex-direction:column;gap:22px;min-width:0;width:100%}
+#app>.kpis{order:0;margin:0;width:100%;min-width:0}
+#app>#festival-world{order:1;position:relative;top:auto;left:auto;width:100%;min-width:0;margin:0;grid-column:auto;grid-row:auto;box-sizing:border-box}
+#festival-canvas{width:100%;height:auto;aspect-ratio:2.1/1;max-height:none}
+.world-top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.world-actions{margin:0}
+#app>.workbench{order:2;display:grid;grid-template-columns:190px minmax(0,1fr);align-items:start;gap:22px;width:100%;min-width:0}
+.rail{position:static;top:auto;display:flex;flex-direction:column;margin:0;overflow:visible}
+.rail button{width:100%;min-height:56px;font-size:13px}
+#build-drawer{min-width:0;width:100%;box-sizing:border-box;scroll-margin-top:18px}
+.sticky{position:static;bottom:auto;z-index:auto}
+.grid,[data-phase="0"] .panel .grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{min-width:0}.card h3,.card p{overflow-wrap:anywhere}
+.kpis .kpi{min-width:0}.kpi strong{font-size:clamp(20px,2.2vw,32px)}
+.table{max-width:100%}
+@media(max-width:1000px){
+ .shell{padding-inline:16px}
+ #app>.workbench{grid-template-columns:1fr}
+ .rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+ .rail button{font-size:12px}
+}
+@media(max-width:600px){
+ .shell{padding-inline:10px}
+ .world-top{display:block;padding:14px}.world-actions{margin-top:10px}
+ #festival-canvas{aspect-ratio:1.45/1}
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .grid,[data-phase="0"] .panel .grid{grid-template-columns:minmax(0,1fr)}
+ .rail button{font-size:11px;min-height:58px}
+ .panel{padding:14px}
+}
+</style>
+</head>
+<body>
+<header class="mast"><div class="shell"><div class="wordmark"><span class="mark" aria-hidden="true"></span><h1>SISB Fest Stratagem</h1></div><div class="tools"><button data-ui="map">Campus map</button><button data-ui="help">How to play</button><button data-ui="reset">Restart</button></div></div></header>
+<main class="shell"><div id="app"></div></main>
+<dialog id="map"><form method="dialog"><button>Close map</button></form><h2>Official 2025 event map</h2><p>Use the school’s map to orient your team. Gate 5 at Mugs and Hugs is the published access point. Simulator zones, limits and timings are planning assumptions.</p><a id="maplink" target="_blank" rel="noopener"><img id="mapimage" alt="Official SISB Fest 2025 campus event map"></a><p><a href="https://sites.google.com/sisbschool.com/sisbfest/about-sisb-fest/2025" target="_blank" rel="noopener">Open the school's map and archive</a></p></dialog>
+<dialog id="help"><form method="dialog"><button>Close guide</button></form><h2>Run the festival</h2><p>Play in teams. Decide who runs Finance, Programme and Operations. Discuss each phase, then lock it in. You begin with a maximum starting budget of ฿3.1 million. Borrow up to ฿1 million separately, with an 8% finance fee. Earn additional money from ticket sales, stalls and sponsors. For a win, admit 3,001 or more people, finish safely and raise at least ฿100,000 for charity after covering your costs.</p><p>Allow roughly 5 min to start, 12 min for bids, 13 min for scheduling, 13 min for stalls and sponsorship, 11 min for ticketing, 13 min for staffing, 15 min for live decisions and 8 min for debrief. Ask teams to defend one safety decision and explain which expense or sponsor made the biggest difference.</p><p>Real artist names and releases are used as classroom examples. Bids, availability, sponsors, costs, capacities and audience figures are fictional. The attendance goal measures total entries across two sessions, while operating limits apply at any one time.</p>
+<ul><li><a href="https://sites.google.com/sisbschool.com/sisbfest/home">SISB Fest home</a>, <a href="https://sites.google.com/sisbschool.com/sisbfest/about-sisb-fest/2025">2025 event and map</a>, <a href="https://sites.google.com/sisbschool.com/sisbfest/location">campus access at Gate 5</a></li>
+<li><a href="https://www.hse.gov.uk/event-safety/crowd-management-assess.htm">Crowd risk and safe capacity</a>, <a href="https://www.hse.gov.uk/event-safety/incidents-and-emergencies.htm">incident and emergency planning</a>, <a href="https://www.food.gov.uk/safety-hygiene/providing-food-at-community-and-charity-events">food hygiene and allergens at community events</a>. These are design references for the simulator.</li>
+<li><a href="https://www.tillybirds.com/discography">Tilly Birds</a>, <a href="https://music.apple.com/us/album/my-chainz-single/1894976005">4EVE</a>, <a href="https://www.starship-ent.com/newrelease">IVE and CRAVITY</a>, <a href="https://straykids.jype.com/Mobile/DiscographyView?AamSeq=280">Stray Kids</a></li><li><a href="https://www.ichitangroup.com/en/products-and-brands">Ichitan product portfolio</a>, <a href="https://www.investor.afteryoudessertcafe.com/en/home">After You</a>, <a href="https://shoponline.taokaenoi.co.th/index.php?controller=category&amp;id_category=22&amp;id_lang=1">Tao Kae Noi</a>, <a href="https://www.ais.th/about-us/pr-news/zeed-5g-esport">AIS esports</a> and <a href="https://news.xbox.com/en-us/2024/11/06/planet-coaster-2-tips/">Frontier’s Planet Coaster 2 guest-flow and retail guidance</a>. Sponsor deals and offers in the game are fictional.</li></ul></dialog>
+<script>
+'use strict';
+const MAP_URL='https://sites.google.com/sitesv-images-rt/APXyLQe9dlAZgF9S8Ub3bVYxvskgKxeJrLRWj5e8FEC3s3Ie70KLZNBTyKdVfD9ZEzhySNSxPLwFDpLgZ5BNWTcMXQ-hbKabw4QrK0yyCkree7aHBszjH2Gre4U-baSUWFNrVRkDv00iGL9IORNMyTt-emsVtvkfm2YUnjAhGkrxPhwb7ISh-VTE1vZ_niEDreg-jR2-L70Dyqgl3suF7ckjuwLAyNypFRqAm0wC1o_B=w1280';
+const byId=id=>document.getElementById(id);
+byId('mapimage').src=MAP_URL;
+byId('maplink').href=MAP_URL;
+byId('mapimage').addEventListener('error',()=>{byId('mapimage').hidden=true;byId('maplink').textContent='Open the original map image';},{once:true});
+const money=n=>new Intl.NumberFormat('en-TH',{style:'currency',currency:'THB',maximumFractionDigits:0}).format(n);
+const num=n=>n.toLocaleString('en-TH');
+const acts=[
+ ['tilly','Tilly Birds','Thailand · I’ll Remember To Forget You',365000,950,1],
+ ['4eve','4EVE','Thailand · MY CHAINZ',520000,1270,1],
+ ['cravity','CRAVITY','South Korea · ReDeFINE',850000,1500,2],
+ ['ive','IVE','South Korea · REVIVE+',1450000,2000,2],
+ ['skz','Stray Kids','South Korea · SKZ-RECORD releases',2400000,2450,3]
+];
+acts.forEach(a=>a[6]='headline');
+acts.push(...[["local0", "GOODMOOD", "Pop rock", 95000, 430, 1, "local"], ["local1", "JayQ", "Hip-hop", 55000, 260, 1, "local"], ["local2", "JustmineNika", "T-pop duo", 110000, 470, 1, "local"], ["local3", "pami", "Indie R&B", 120000, 520, 1, "local"], ["local4", "the ge", "Indie R&B", 65000, 290, 1, "local"], ["local5", "VVV", "T-pop", 85000, 350, 1, "local"], ["local6", "WAV", "Indie R&B", 70000, 320, 1, "local"], ["local7", "YUNGTARR", "Hip-hop", 100000, 440, 1, "local"], ["local8", "Television off", "Alternative rock", 145000, 590, 1, "local"], ["local9", "TOFU", "Indie", 60000, 280, 1, "local"], ["school0", "Neon Tigers", "K-pop covers \u00b7 SISB", 0, 90, 0, "school"], ["school1", "After School Static", "Alternative rock \u00b7 NIST", 4000, 102, 0, "school"], ["school2", "Tiger Tape", "Indie pop \u00b7 Bangkok Patana", 5000, 114, 0, "school"], ["school3", "Riverline", "R&B and soul \u00b7 Shrewsbury Riverside", 0, 126, 0, "school"], ["school4", "Northside Noise", "Pop punk \u00b7 Harrow Bangkok", 7000, 138, 0, "school"], ["school5", "Velvet Voltage", "Synth pop \u00b7 Wellington Bangkok", 8000, 150, 0, "school"], ["school6", "Midnight Assembly", "Hip-hop \u00b7 Brighton College Bangkok", 0, 162, 0, "school"], ["school7", "Prep FM", "Dance pop \u00b7 Bangkok Prep", 10000, 174, 0, "school"], ["school8", "Pink Horizon", "Thai pop rock \u00b7 Triam Udom Suksa", 11000, 186, 0, "school"], ["school9", "Rose Riot", "Rock \u00b7 Suankularb Wittayalai", 0, 198, 0, "school"], ["school10", "Redline", "Funk rock \u00b7 Assumption College Bangkok", 13000, 210, 0, "school"], ["school11", "Lunar Bloom", "Korean pop and vocal harmony \u00b7 Saint Joseph Convent", 14000, 222, 0, "school"]]);
+const isBooked=k=>Object.prototype.hasOwnProperty.call(s.booked,k);
+const bookingComplete=()=>actsBooked().filter(a=>a[6]==='headline').length===1&&actsBooked().filter(a=>a[6]!=='headline').length===7;
+const legacySlots=[["0", "10:30", 0], ["1", "11:10", 0], ["2", "11:50", 0], ["3", "12:30", 0], ["4", "13:10", 0], ["5", "15:30", 1], ["6", "16:10", 1], ["7", "16:50", 1], ["8", "17:30", 1], ["9", "18:10", 1]];
+const slots = Array.from({length:6}, (_, index) => {
+ const hour = 15 + index;
+ return [String(hour), hour + ':00–' + (hour + 1) + ':00', index < 3 ? 0 : 1];
+});
+const requiredShows = ['choir', 'charity'];
+const shows={
+ magic:['Student magic and illusion show',18000,205,0,'main'],
+ dance:['Student dance crews',14000,170,0,'any'],
+ choir:['Primary choir',11000,180,0,'any'],
+ alumni:['Alumni showcase',26000,210,0,'any'],
+ cultural:['Thai–Korean cultural showcase',26000,210,0,'any'],
+ stem:['Student robotics demo',9000,130,0,'community'],
+ charity:['Charity auction',12000,130,30000,'community'],
+ sports:['Skills challenge',18000,125,0,'community'],
+ puppets:['Primary puppet theatre',7000,140,0,'community'],
+ beatbox:['Beatbox battle',16000,210,0,'any'],
+ science:['Live science spectacular',28000,240,0,'main'],
+ fashion:['Recycled fashion runway',19000,180,0,'any'],
+ quiz:['Audience game show',13000,175,0,'any'],
+ martial:['Martial arts demonstration',22000,200,0,'main'],
+ comedy:['Clean improv comedy',9500,145,0,'any'],
+ circus:['Circus skills showcase',24000,235,0,'main']
+};
+if(safeLegacyProgramme())shows.rock=['Secondary school bands',18000,205,0,'main'];
+function safeLegacyProgramme(){try{const saved=JSON.parse(localStorage.getItem('sisb-fest-v1'));return saved?.phase>=5&&saved.schedule?.rock;}catch{return false;}}
+// Each entry specifies booth spaces, rent paid to SISB, servings per session and ticket appeal.
+const stalls={
+ thai:['Chicken pad Thai & grilled pork skewers',4,52000,520,120,'food'],
+ halal:['Halal chicken biryani & beef satay',2,29000,275,70,'food'],
+ veg:['Tofu pad kra pao & vegetable spring rolls',2,23500,225,75,'food'],
+ snacks:['Mango sticky rice & coconut ice cream',2,25000,245,45,'food'],
+ merch:['Student-designed tote bags & enamel pins',2,33000,0,85,'market'],
+ clubs:['Ring toss & beanbag target throw',3,24000,0,125,'market'],
+ community:['Custom bead bracelets & rubber-stamp postcards',2,26000,0,80,'market'],
+ basil:['Pad kra pao chicken with fried egg',1,14500,155,48,'food'],
+ moo:['Moo ping pork skewers with sticky rice',1,12500,150,44,'food'],
+ noodles:['Boat noodles with beef & morning glory',2,23500,245,70,'food'],
+ somtam:['Som tam, grilled chicken & sticky rice',2,26000,235,84,'food'],
+ katsu:['Chicken katsu curry rice bowls',2,26500,230,82,'food'],
+ tteok:['Tteokbokki & crispy seaweed rolls',1,15500,135,75,'food'],
+ tacos:['Chicken tacos & black-bean tacos',2,24000,200,73,'food'],
+ bao:['Teriyaki chicken bao & mushroom bao',1,14000,145,56,'food'],
+ roti:['Banana roti with condensed milk',1,11500,160,51,'food'],
+ boba:['Thai milk tea & brown-sugar boba',1,17500,200,89,'food'],
+ fruit:['Watermelon slush & pineapple cups',1,10000,170,39,'food'],
+ hoops:['Basketball shootout · score three baskets in 30 seconds',1,14000,0,80,'market'],
+ darts:['Magnetic darts · hit three marked targets',1,10000,0,48,'market'],
+ football:['Football accuracy · shoot through numbered targets',2,17500,0,95,'market'],
+ tower:['Giant block tower · pull a block without toppling it',1,9000,0,42,'market']
+};
+const sponsors={
+ milo:['MILO chocolate drinks booth',155000,2,110,'market','Needs a staffed market and 2,200 attendees. Uses two booth spaces.'],
+ telco:['Mobile network sponsor',245000,2,130,'market','Requires 3,100 admissions and a digital campaign.'],
+ bank:['Community bank sponsor',190000,1,70,'market','Requires a scheduled charity auction and 2,200 attendees.'],
+ water:['Water brand hydration tents',120000,2,80,'food','Requires free water and 1,800 attendees. Uses two food-court spaces.'],
+ ichitan:['Ichitan iced tea pop-up',185000,2,150,'market','Exclusive paid drinks partner. Needs a social campaign or ad campaign, 3,050 guests and 550 drink transactions to earn its bonus.'],
+ afteryou:['After You dessert counter',145000,2,135,'food','Needs an existing desserts vendor, 2,900 guests and 720 food transactions to earn its bonus.'],
+ tao:['Tao Kae Noi snack challenge',125000,1,110,'market','Needs at least one school band or dance programme and 2,750 guests. Bonus at 750 food transactions.'],
+ ais:['AIS gaming and esports zone',255000,3,190,'market','Needs the robotics demo and a digital campaign. Requires 3,150 guests. Bonus at 3,450.']
+};
+const channels={
+ school:['School newsletter & parent groups',9000,[410,310,70]],
+ social:['Student reels & artist teasers',36000,[365,160,480]],
+ local:['Local posters & community network',22000,[75,230,340]],
+ ads:['Paid social ads',79000,[275,380,630]],
+ presale:['House and class presale',12000,[535,180,75]]
+};
+const roles={gate:['Gate scanning & queues',4],main:['Main-stage crowd stewards',6],community:['Community stage & student check-in',3],food:['Food court & handwashing',3],market:['Stalls & sponsor team',3],welfare:['Welfare, lost children & access',3],float:['Break cover & rapid support',2]};
+const ops={medical:['First-aid team',46000],security:['Professional security',69000],tech:['Touring-grade stage, power & sound',175000],weather:['Covered backup and rain plan',78000],radio:['Radios and public announcements',28000],water:['Free water and hygiene checks',23000],access:['Accessible routes and signage',18000]};
+const phases=['Book acts','Schedule','Stalls & sponsors','Sell tickets','Staff & safety','Event day','Results'];
+const capital=3100000;
+const creditLimit=1000000;
+const financeFee=()=>Math.round((s.loan||0)*.08);
+const tourCost=()=>sum(actsBooked().map(a=>a[5]>=2?55000:0));
+const newGame=()=>({phase:0,programmeVersion:2,seed:Math.floor(Math.random()*1e8),concession:'standard',bids:{},offers:{},booked:{},schedule:{},stalls:{},sponsors:{},channels:{},prices:[180,320,450],split:55,stock:3650,tickets:null,roles:{gate:0,main:0,community:0,food:0,market:0,welfare:0,float:0},ops:{},live:null});
+const concessionPlans={
+ value:['Value menu',85,1.13,11000],
+ standard:['Regular prices',110,1,0],
+ premium:['Premium prices',145,.72,0]
+};
+const rivalEvents=[
+ ['A free T-pop show is announced nearby',[.77,.95,.89]],
+ ['A shopping-centre food festival opens on the same weekend',[.91,.76,.93]],
+ ['A gaming expo offers a student discount',[.78,.90,.85]]
+];
+const rivalResponses={
+ bundle:['Student ticket + food voucher',32000,[.19,.07,.02],1.15],
+ creator:['Local creator campaign',42000,[.09,.04,.19],1],
+ community:['Family and alumni outreach',19000,[.04,.19,.06],1.07],
+ hold:['Keep the plan and protect your cash',0,[0,0,0],1]
+};
+const marketMoves={
+ express:['Open an express lane',3500,1.26,1],
+ combo:['Run a food-and-drink combo',1800,1.02,1.19],
+ hold:['Keep the current setup',0,1,1]
+};
+let s=newGame();
+try{const v=JSON.parse(localStorage.getItem('sisb-fest-v1'));if(v&&v.offers&&Number.isInteger(v.phase)&&v.phase>=0&&v.phase<=6)s=v}catch{}
+if(s.programmeVersion!==2 && s.phase<5){
+ if(s.phase>0)s.phase=0;
+ s.schedule={};
+ s.tickets=null;
+ s.programmeVersion=2;
+}
+if(!concessionPlans[s.concession])s.concession='standard';
+if(s.phase>=4&&!s.rivalResponse)s.rivalResponse='hold';
+const save=()=>{try{localStorage.setItem('sisb-fest-v1',JSON.stringify(s))}catch{}};
+const checked=(collection,key)=>Boolean(s[collection][key]);
+const sum=values=>values.reduce((total,x)=>total+x,0);
+const active=collection=>Object.keys(s[collection]).filter(k=>s[collection][k]);
+const entries=object=>Object.entries(object);
+const paid=()=>sum(Object.values(s.booked));
+const programmeCost=()=>sum(Object.keys(s.schedule).filter(k=>shows[k]).map(k=>shows[k][1]));
+const sponsorCash=()=>sum(active('sponsors').map(k=>Math.round(sponsors[k][1]*.35)));
+const stallCash=()=>sum(active('stalls').map(k=>stalls[k][2]));
+const marketing=()=>sum(active('channels').map(k=>channels[k][1]));
+const operations=()=>sum(active('ops').map(k=>ops[k][1]));
+const venue=335000;
+const staffCount=()=>sum(Object.values(s.roles).map(Number));
+const costs=()=>venue+paid()+programmeCost()+marketing()+operations()+tourCost()+concessionPlans[s.concession][3]+(rivalResponses[s.rivalResponse]?.[1]||0)+financeFee();
+const available=()=>capital+(s.loan||0)+stallCash()+sponsorCash()+(s.tickets?.revenue||0)-costs()-(s.live?.extra||0)-(s.live?.refunds||0)-(s.cancellation||0);
+const actsBooked=()=>acts.filter(a=>isBooked(a[0]));
+const plannedArtist=k=>acts.find(a=>a[0]===k);
+const phaseTitle=title=>'<h2>'+title+'</h2>';
+const toggle=(c,k,label)=>'<button class="'+(checked(c,k)?'selected':'')+'" aria-pressed="'+checked(c,k)+'" data-toggle="'+c+':'+k+'">'+(checked(c,k)?'✓ ':'')+label+'</button>';
+const table=(heads,rows)=>'<div class="table"><table><thead><tr>'+heads.map(x=>'<th scope="col">'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+const card=(title,info,body)=>'<article class="card"><canvas class="card-art" aria-hidden="true" data-art="'+title.replace(/"/g,'&quot;')+'"></canvas><h3>'+title+'</h3><p>'+info+'</p>'+body+'</article>';
+function cashLine(){
+ const essential=sum(['medical','security','tech','radio','water','access'].filter(k=>!s.ops[k]).map(k=>ops[k][1]));
+ return '<div class="ok"><b>Budget desk</b><p>Starting budget '+money(capital)+' · Spendable cash '+money(available())+'<br>Safety and production still to book '+money(essential)+'</p><p>Raise more cash through ticket sales, stall rent and sponsor deposits. You can visit Stalls &amp; sponsors early and return to change your acts. Keep cash for event-day problems.</p><p>Borrowed '+money(s.loan||0)+' of '+money(creditLimit)+' · Finance fee '+money(financeFee())+'</p>'+(s.phase<5&&(s.loan||0)<creditLimit?'<button data-borrow>Borrow ฿250,000 (+฿20,000 fee)</button>':'')+'</div>';
+}
+function phaseNav(label,disabled=false){return '<div class="sticky"><div class="actions"><button class="primary" id="next" '+(disabled?'disabled':'')+'>'+label+'</button>'+(s.phase>0?'<button data-back>Back to '+phases[s.phase-1]+'</button>':'')+'</div></div>'}
+function slotFor(key){return s.schedule[key]}
+function stageSlot(value){return value?.split(':')[0]}
+function sessionFor(value){return [...slots,...legacySlots].find(x=>x[0]===stageSlot(value))?.[2]}
+function slotOptions(key){
+ const artist=plannedArtist(key), venue=shows[key]?.[4]||(artist?.[6]==='headline'?'main':'any');
+ return '<select aria-label="Schedule '+(artist?.[1]||shows[key][0])+'" data-slot="'+key+'"><option value="">Unscheduled</option>'+slots.filter(x=>artist?.[6]!=='headline'||x[2]===1).map(([id,time])=>['main','community'].filter(v=>venue==='any'||v===venue).map(v=>'<option value="'+id+':'+v+'" '+(slotFor(key)===id+':'+v?'selected':'')+'>'+time+' · '+v+'</option>').join('')).join('')+'</select>';
+}
+function scheduleIssues(){
+ const values=Object.values(s.schedule);
+ const messages=[];
+ if(new Set(values).size!==values.length)messages.push('Two acts use the same stage at the same time.');
+ if(!bookingComplete())messages.push('Book exactly one headline act and seven supporting music acts.');
+ 
+ if(actsBooked().some(a=>!slotFor(a[0])))messages.push('Give all eight music acts a performance slot.');
+ const musicStages = new Set(actsBooked().map(a=>slotFor(a[0])?.split(':')[1]).filter(Boolean));
+ if(musicStages.size<2)messages.push('Put music acts on both stages.');
+ if(requiredShows.some(key=>!slotFor(key)))messages.push('Schedule the primary choir and charity auction.');
+ if(values.length!==slots.length*2)messages.push('Fill all 12 stage slots with eight music acts and four additional performances.');
+
+ return messages;
+}
+function credits(){return [0,1].map(i=>sum(entries(s.schedule).filter(([,slot])=>sessionFor(slot)===i).map(([k])=>shows[k]?.[2]||plannedArtist(k)?.[4]||0)))}
+function used(zone){return sum(active('stalls').filter(k=>stalls[k][5]===zone).map(k=>stalls[k][1]))+sum(active('sponsors').filter(k=>sponsors[k][2]&&sponsors[k][4]===zone).map(k=>sponsors[k][2]))}
+const zoneCaps={food:12,market:9};
+const hasDigital=()=>s.channels.social||s.channels.ads;
+const rival=()=>rivalEvents[s.seed%rivalEvents.length];
+const sponsorClash=()=>active('sponsors').filter(k=>['ichitan','milo'].includes(k)).length>1;
+function sponsorPitch(k){
+ const draw=credits().reduce((a,b)=>a+b,0), food=meals();
+ const gates={
+  milo:[draw>=400,'At least 400 programme draw'],
+  telco:[draw>=900,'At least 900 programme draw'],
+  bank:[Boolean(s.schedule.charity),'Schedule the charity auction'],
+  water:[food>=700,'Plan at least 700 meals per session'],
+  ichitan:[draw>=800,'At least 800 programme draw'],
+  afteryou:[Boolean(s.stalls.snacks),'Reserve the desserts and snacks stalls'],
+  tao:[Boolean(s.schedule.dance||actsBooked().some(a=>a[6]==='school'&&slotFor(a[0]))),'Schedule school bands or dance crews'],
+  ais:[Boolean(s.schedule.stem),'Schedule the robotics demo']
+ };
+ return gates[k];
+}
+function estimateTickets(){
+ const counts=s.prices.map((price,i)=>{
+   const base=[950,825,510][i], add=sum(active('channels').map(k=>channels[k][2][i]));
+   const appeal=credits(), size=(appeal[0]+appeal[1])*[.17,.17,.32][i];
+   const cut=Math.max(.16,1-(price-[150,280,380][i])/([450,660,850][i]));
+   const foodAppeal=Math.min(240,meals()*.18)*(s.concession==='premium'&&i===0?.55:1);
+   const boothAppeal=sum(active('sponsors').map(k=>sponsors[k][3]))*[.55,.24,.36][i];
+   const affordability=Math.max(.64,1-(concessionPlans[s.concession][1]-100)/320);
+   const competition=s.rivalSeen?rival()[1][i]+(rivalResponses[s.rivalResponse]?.[2][i]||0):1;
+   return Math.max(0,Math.round((base+add+size+foodAppeal+boothAppeal)*cut*affordability*competition));
+ });
+ const total=sum(counts), dayCap=Math.min(1850,Math.floor(s.stock*s.split/100)), nightCap=Math.min(2100,s.stock-Math.floor(s.stock*s.split/100));
+ const dayDemand=Math.round(total*.51+(credits()[0]-credits()[1])*.09);
+ const day=Math.min(dayCap,Math.max(0,dayDemand)), night=Math.min(nightCap,Math.max(0,total-dayDemand));
+ const count=day+night, mix=counts.map(n=>total?n/total:0);
+ const revenue=Math.round(count*sum(mix.map((fraction,i)=>fraction*s.prices[i])));
+ return {count,day,night,revenue,demand:total,dayDemand,nightDemand:total-dayDemand,mix};
+}
+function venueMap(){
+ return '<div class="grid">'+[
+ ['Gate 5','Entry, wristbands and accessible route'],
+ ['Main stage','Headline sound checks and crowd stewards'],
+ ['Community stage','School performances and activities'],
+ ['Food court','12 footprints · food, drinks and water'],
+ ['Market','9 footprints · clubs, vendors and sponsors'],
+ ['Welfare point','First aid, lost children and guest support']
+ ].map(([name,plan])=>card(name,plan,'')).join('')+'</div>';
+}
+function booking(){
+ const selectedGroup=s.bookingTab||'headline';
+ const booked=actsBooked(),head=booked.filter(a=>a[6]==='headline').length,support=booked.length-head;
+ return phaseTitle('Build your festival line-up')+'<p>Book <b>1 headline act + 7 supporting music acts</b>. Mix Thai emerging artists with low-cost school bands. Start around 20% below the guide fee. Agents can decline and counteroffer. Negotiate again or choose another act. All fees and audience draws are simulation estimates.</p>'+cashLine()+'<h3>'+head+'/1 headliner · '+support+'/7 support acts · Artist fees '+money(paid())+'</h3>'+[
+ ['headline','01 · International & headline acts','Choose one headliner. Overseas acts add ฿55,000 travel.'],
+ ['local','02 · Thai emerging artists','10 real acts. Emerging status researched for 2026; TikTok following sizes are unverified. Clean school-appropriate sets assumed.'],
+ ['school','03 · School bands','Listen to student performances for inspiration. The booking roster was created for the game.']
+ ].filter(([group])=>group===selectedGroup).map(([group,title,desc])=>'<details open><summary><h3 style="display:inline">'+title+'</h3></summary><p>'+desc+'</p>'+(group==='school'?'<p><a href="https://sites.google.com/sisbschool.com/sisbfest/charity" target="_blank" rel="noopener">Watch the official SISB Fest video</a> · <a href="https://sisb.ac.th/hitting-the-high-notes-hydroxide-band-shines-at-sisb-fest-2025/" target="_blank" rel="noopener">Meet Hydroxide Band</a></p>':'')+'<div class="grid">'+acts.filter(a=>a[6]===group).map(a=>{
+ const [key,name,bio,fee,draw]=a,o=s.offers[key],booked=isBooked(key),bid=s.bids[key]??Math.round(fee*.8/1000)*1000;
+ const status=booked?'Booked · '+money(s.booked[key]):o?.accepted?'Offer accepted · '+money(o.bid):o?'Agent declined. Counteroffer '+money(o.counter)+' · Round '+o.attempts:'';
+ return card(name,bio+'<br>Estimated audience appeal '+draw+' · Guide fee '+money(fee),'<p>'+status+'</p>'+(booked?'<button data-release="'+key+'">Cancel (20% fee)</button>':group==='school'?'<button data-schoolbook="'+key+'">Book for '+money(fee)+'</button>':'<label>Offer in baht<input type="number" min="1000" step="1000" value="'+bid+'" data-bid="'+key+'"></label>'+(o?.accepted?'<button data-book="'+key+'">Confirm booking</button>':'<button data-offer="'+key+'">Submit bid</button>')));
+ }).join('')+'</div></details>').join('')+'<p class="muted">Research: <a href="https://newsroom.spotify.com/2026-05-05/radar-asia-artists-2026/" target="_blank">Spotify RADAR 2026</a> · <a href="https://www.believe.com/article/label-focus-smallroom/" target="_blank">Smallroom emerging roster, 2026</a>. Audience appeal is a game value, not TikTok followers.</p>'+phaseNav(selectedGroup==='headline'?'Next · Local acts':selectedGroup==='local'?'Next · School bands':'Lock eight-act line-up',selectedGroup==='headline'?!head:selectedGroup==='school'&&!bookingComplete());
+}
+function programme(){
+ const options=[...actsBooked().map(a=>[a[0],a[1],0]),...entries(shows).map(([id,o])=>[id,o[0],o[1]])];
+ const board=slots.map(([id,time])=>[time,...['main','community'].map(v=>entries(s.schedule).filter(([,slot])=>slot===id+':'+v).map(([k])=>shows[k]?.[0]||plannedArtist(k)[1]).join(' / ')||'Available')]);
+ const issues=scheduleIssues();
+ return phaseTitle('Plan the two-stage programme')+'<p>Fill both stages from 15:00 to 21:00. Spread eight music acts across the two stages, then add the primary choir, charity auction and two variety acts of your choice. Each one-hour slot includes changeover time. The first session ends at 18:00.</p>'+table(['Time','Main stage','Community stage'],board)+'<div class="grid">'+options.map(([k,name,price])=>card(name,price?money(price)+' cost · Audience appeal +'+shows[k][2]+(shows[k][3]?' · Potential auction income '+money(shows[k][3]):''):'Included in booking · Audience appeal +'+(plannedArtist(k)?.[4]||0),slotOptions(k))).join('')+'</div>'+(issues.length?'<div class="warn">'+issues.join('<br>')+'</div>':'')+phaseNav('Lock programme',!!issues.length);
+}
+function vendor(){
+ const over=Object.keys(zoneCaps).some(z=>used(z)>zoneCaps[z]);
+ const bad=over||sponsorClash()||active('sponsors').some(k=>!sponsorPitch(k)[0]);
+ return phaseTitle('Build the market and food court')+'<p>Choose operators and set menu prices. The festival keeps stall rent plus 15% of food sales. Sponsor offers depend on your programme and stalls. Sign for a 35% deposit and earn the balance by meeting the contract.</p>'+
+ '<div class="ok">Food court '+used('food')+'/12 booth spaces · Market '+used('market')+'/9 booth spaces</div><div class="grid">'+entries(stalls).map(([k,[name,spots,fee,meals,appeal,zone]])=>card(name,zone+' · '+spots+' spaces · '+money(fee)+' rent'+(meals?' · '+num(meals)+' servings per session':'')+' · +'+appeal+' ticket appeal',toggle('stalls',k,'Reserve spaces'))).join('')+'</div><h3>Food pricing</h3><div class="grid">'+entries(concessionPlans).map(([k,[name,price,,cost]])=>card(name,money(price)+' average meal'+(cost?' · '+money(cost)+' school subsidy':'')+' · '+(k==='value'?'More students can afford to eat.':k==='premium'?'Higher spending per buyer but fewer buyers.':'Normal demand and spending.'),'<button data-concession="'+k+'" class="'+(s.concession===k?'selected':'')+'" aria-pressed="'+(s.concession===k)+'">Choose '+name.toLowerCase()+'</button>')).join('')+'</div><h3>Sponsor contracts</h3><div class="grid">'+entries(sponsors).map(([k,[name,fee,spots,,zone,terms]])=>{
+  const [eligible,reason]=sponsorPitch(k);
+  return card(name,money(fee)+' base · '+spots+' '+zone+' spaces<br>'+terms+'<br><strong>'+(eligible?'Offer available':'To unlock: '+reason)+'</strong>',eligible||s.sponsors[k]?toggle('sponsors',k,'Sign contract'):'<button disabled>Offer locked</button>');
+ }).join('')+'</div>'+(bad?'<p class="warn">'+(over?'Free up booth space. ':'')+(sponsorClash()?'MILO and Ichitan cannot both be your paid drinks sponsor. ':'')+(active('sponsors').some(k=>!sponsorPitch(k)[0])?'Remove or qualify for locked contracts.':'')+'</p>':'')+phaseNav('Lock stalls and sponsors',bad);
+}
+function rivalDesk(){
+ if(!s.rivalSeen)return '<div class="incident"><h3>Presale pulse</h3><p>Check early demand before committing to your full ticket release.</p><button data-rival>Run presale check</button></div>';
+ return '<div class="incident"><div class="eyebrow">Presale alert</div><h3>'+rival()[0]+'</h3><p>Without a response, estimated demand falls by '+rival()[1].map((x,i)=>Math.round((1-x)*100)+'% '+['students','families','public'][i]).join(' · ')+'. Choose a response, then compare forecasts.</p><div class="grid">'+entries(rivalResponses).map(([k,[name,cost,lift]])=>card(name,money(cost)+' · '+(k==='hold'?'No recovery boost':lift.map((n,i)=>Math.round(n*100)+' pts '+['students','families','public'][i]).join(' / ')),'<button data-response="'+k+'" class="'+(s.rivalResponse===k?'selected':'')+'" aria-pressed="'+(s.rivalResponse===k)+'">Choose response</button>')).join('')+'</div></div>';
+}
+function selling(){
+ const t=estimateTickets();
+ return phaseTitle('Price and promote tickets')+'<p>Set separate prices for students, school families and the public. Each ticket admits one guest to one session. Staff and crew are counted separately in the operations plan.</p><div class="formrow">'+['Student','Family / school community','General public'].map((name,i)=>'<label>'+name+' (฿)<br><input type="number" min="0" max="1500" step="10" value="'+s.prices[i]+'" data-price="'+i+'"></label>').join('')+'<label>Tickets to release<br><input type="number" min="500" max="3950" step="50" value="'+s.stock+'" data-setting="stock"></label><label>Day-session allocation (%)<br><input type="number" min="30" max="70" value="'+s.split+'" data-setting="split"></label></div><div class="grid">'+entries(channels).map(([k,[name,price,reach]])=>card(name,money(price)+' · Estimated reach '+num(sum(reach)),toggle('channels',k,'Run campaign'))).join('')+'</div>'+rivalDesk()+
+ '<div class="ok"><b>'+num(t.count)+' tickets forecast · '+money(t.revenue)+'</b><br>Day '+num(t.day)+' / demand '+num(t.dayDemand)+' · Evening '+num(t.night)+' / demand '+num(t.nightDemand)+'<br>Estimated audience mix: '+t.mix.map((x,i)=>Math.round(x*100)+'% '+['students','families','public'][i]).join(' · ')+'<br>Published session ceilings: 1,850 day and 2,100 evening.</div>'+phaseNav('Open ticket sales',!s.rivalSeen||!s.rivalResponse);
+}
+function meals(){return sum(active('stalls').map(k=>stalls[k][3]))+(s.sponsors.afteryou?150:0)}
+function concessions(day,night,choice=s.live?.marketMove){
+ const plan=concessionPlans[s.concession], move=marketMoves[choice]||marketMoves.hold;
+ const mix=s.tickets?.mix||[.4,.35,.25];
+ const festivalMood=1+((s.live?.rating??70)-70)/250;
+ const appetite=(mix[0]*.47+mix[1]*.70+mix[2]*.61)*plan[2]*festivalMood*(rivalResponses[s.rivalResponse]?.[3]||1);
+ const foodPlots=placedItems().filter(i=>i.zone==='food');
+ const exposure=foodPlots.length?sum(foodPlots.map(plotExposure))/foodPlots.length:1;
+ const baseCapacity=meals()*(1+Math.max(0,s.roles.food-3)*.06)*exposure;
+ const dayDemand=Math.round(day*appetite*exposure);
+ const dayUnits=Math.min(Math.round(baseCapacity+(s.live?.reserveMeals||0)),dayDemand);
+ const eveningDemand=Math.round(night*appetite*move[2]*exposure);
+ const nightUnits=Math.min(Math.round(baseCapacity*move[1]),eveningDemand);
+ const units=dayUnits+nightUnits;
+ const drinks=s.sponsors.ichitan||s.sponsors.milo?Math.min(1300,Math.round((day+night)*.25*(s.concession==='premium'?.84:1)*move[2])):0;
+ const gross=units*plan[1]+drinks*45;
+ return {units,drinks,gross,dayDemand,share:Math.round(gross*.15),eveningDemand,nightCapacity:Math.round(baseCapacity*move[1])};
+}
+function marketTrade(){
+ const l=s.live, preview=concessions(l.day,l.night);
+ const baseline=preview.share;
+ return phaseTitle('Live trading desk')+'<p>Review your evening sales forecast. Your final move affects vendor sales, the school’s commission and sponsor targets.</p><div class="incident"><h3>Evening demand check</h3><p>'+num(preview.eveningDemand)+' buyers expected · '+num(preview.nightCapacity)+' servings available · '+money(baseline)+' school commission forecast across both sessions.</p></div><div class="grid">'+entries(marketMoves).filter(([key])=>l.night||key==='hold').map(([key,[name,cost]])=>{
+  const test=concessions(l.day,l.night,key);
+  const bonuses=sum(sponsorAudit(l.day+l.night,test).map(x=>x.bonus));
+  return card(name,money(cost)+' cost · '+num(test.units)+' meals forecast · '+money(test.share)+' school commission · '+money(bonuses)+' sponsor bonuses','<button data-market="'+key+'" '+(cost>0&&cost>available()?'disabled':'')+'>Lock trading decision</button>');
+ }).join('')+'</div>';
+}
+function requiredStaff(){
+ const busy=(s.tickets?.night||0)>=1750;
+ return {...Object.fromEntries(entries(roles).map(([k,v])=>[k,v[1]])),main:busy?7:6,gate:(s.tickets?.count||0)>=3200?5:4};
+}
+function staffing(){
+ const requirements=requiredStaff(), needs=readiness();
+ return phaseTitle('Assign teachers and confirm safety cover')+'<p>Assign from a pool of 30 teachers across both sessions. Buy specialist services separately. The simulation requires essential staff, first aid, security, stage production, communications, water and access before gates can open.</p><div class="ok">Teachers assigned: '+staffCount()+'/30 · Meals per session: '+num(meals())+'</div><div class="formrow">'+entries(roles).map(([k,[name]])=>'<label>'+name+' (min '+requirements[k]+')<br><input type="number" value="'+s.roles[k]+'" min="0" max="30" data-staff="'+k+'"></label>').join('')+'</div><div class="grid">'+entries(ops).map(([k,[name,price]])=>card(name,money(price),toggle('ops',k,'Book service'))).join('')+'</div><details><summary>View site plan and zone roles</summary>'+venueMap()+'</details>'+
+ (needs.length?'<div class="warn">'+needs.join('<br>')+'</div>':'<p class="ok">Ready to open gates. Keep a cash reserve for incident response.</p>')+phaseNav('Open the festival',!!needs.length);
+}
+function readiness(){
+ const needs=[];
+ if(staffCount()>30)needs.push('Assign no more than 30 teachers.');
+ const shortages=entries(requiredStaff()).filter(([k,n])=>s.roles[k]<n);
+ if(shortages.length)needs.push('Add teachers at '+shortages.map(([k])=>roles[k][0]).join(', ')+'.');
+ for(const k of ['medical','security','radio','water','access'])if(!s.ops[k])needs.push('Book '+ops[k][0]+'.');
+ if(actsBooked().length&&!s.ops.tech)needs.push('Book touring-grade stage production for your headline acts.');
+ if(available()<0)needs.push('Your working cash is negative. Change the plan or use a smaller line-up.');
+ return needs;
+}
+function liveStart(){
+ s.live={step:0,extra:0,day:s.tickets.day,night:s.tickets.night,refunds:0,rating:70,log:[],stopped:false};
+}
+function liveCases(){
+ const t=s.tickets, l=s.live;
+ const rush=(t.day>=1550||t.night>=1800), mealGap=Math.max(0,concessions(l.day,0).dayDemand-meals()*(1+Math.max(0,s.roles.food-3)*.06));
+ const repair=s.ops.weather?12000:78000, isBig=actsBooked().some(a=>a[5]>=2), rain=(!s.ops.weather && t.night>1000);
+ const staff=s.roles.float>=3, rosters=s.roles.gate>=5;
+ return [
+ {title:'A wave arrives at Gate 5',story:rush?'About 600 guests reach the gate together. The queue backs up toward the approach road.':'Early arrivals cluster near Gate 5. Your stewards can spread the queue before the peak.',
+  choices:[
+  ['Open a staffed overflow scanning lane',rosters?7000:16000,0,0,7,'A second lane and a steward at the entrance clear the approach.'],
+  ['Meter entry and send a waiting-time update',2000,0,0,2,'The gate stays inside its processing limit. Guests wait longer but get an update.'],
+  ['Pause scanning and bring in temporary barriers',4500,rush?45:10,0,-4,'Queues remain controlled, but some day-session guests leave and receive refunds.']]},
+ {title:'The food court hits its lunch peak',story: mealGap?'Meal demand exceeds the planned supply by about '+num(mealGap)+' at the busiest session.':'The stalls have enough meals, but several queues are blocking the walkway.',
+  choices:[
+  ['Stagger breaks and move queues off the walkway',4000,mealGap>240?60:0,0,mealGap>240?-7:5,'Staggering helps access. If there is a large supply gap, some guests still leave and receive a refund.'],
+  ['Bring in an approved reserve vendor',mealGap?Math.min(46000,12000+mealGap*45):18000,0,0,7,'The food lead opens a reserve serving point after hygiene and allergen checks.'],
+  ['Give return times and display sold-out items',1500,mealGap>160?80:0,0,mealGap?-5:3,'Foot traffic clears. Guests who give up on the session are refunded.']]},
+ {title:'A storm arrives before the evening session',story:s.ops.weather?'Your covered backup is ready. The safety lead has paused outdoor setup pending inspection.':'The outdoor site is temporarily closed by the safety lead. You need time or safe covered space.',
+  choices:[
+  ['Use covered backup and cap entry to fit',repair,0,s.ops.weather?0:Math.max(0,l.night-1450),s.ops.weather?6:-4,'The approved covered setup opens. Any tickets beyond its limit are refunded.'],
+  ['Delay doors until the safety lead clears the site',12000,0,rain?140:45,-2,'You wait for clearance and update ticket holders. Guests who cannot stay are refunded.'],
+  ['Cancel the evening session and refund tickets',5000,0,l.night,-15,'You cancel safely and refund all affected evening tickets.']]},
+ {title:isBig?'The headline act is running late':'The evening stage is running late',story:'A delayed load-in leaves a gap before the next act. You need to protect the curfew and the stage changeover.',
+  choices:[
+  ['Use a rehearsed student set while crew prepares',staff?6500:12500,0,0,8,'The student set fills the gap, and the stage manager keeps the full sound check.'],
+  ['Shorten the final set and announce the change',1500,0,Math.min(l.night,60),-3,'The event finishes within the curfew. Disappointed guests who leave receive refunds.'],
+  ['Hold the programme and issue timed updates',4000,0,Math.min(l.night,30),1,'The audience gets updates while the stage manager checks that the plan still fits the curfew.']]}
+ ];
+}
+function runLive(index){
+ const l=s.live, scene=liveCases()[l.step], choice=scene?.choices[index];
+ if(!choice)return;
+ const [name,cost,dLoss,nLoss,rating,outcome]=choice;
+ if(cost>available())return;
+ const dl=Math.min(l.day,dLoss), nl=Math.min(l.night,nLoss);
+ if(l.step===1&&index===1)l.reserveMeals=300;
+ l.day-=dl;
+ l.night-=nl;
+ l.refunds=Math.round(s.tickets.revenue*(s.tickets.count-l.day-l.night)/Math.max(1,s.tickets.count));
+ l.extra+=cost;
+ l.rating=Math.max(0,Math.min(100,l.rating+rating));
+ l.log.push({title:scene.title,choice:name,cost,lost:dl+nl,outcome});
+ l.step++;
+
+}
+function eventDay(){
+ const l=s.live;
+ if(l.step>=4)return marketTrade();
+ const c=liveCases()[l.step];
+ return phaseTitle('Festival control room')+'<p>Resolve each incident as it happens. Costs come from working cash. Lost admissions can trigger refunds or break sponsor targets.</p>'+
+ '<div class="ok">Day '+num(l.day)+' · Evening '+num(l.night)+' · Guest experience '+l.rating+'/100 · Refunds '+money(l.refunds)+'</div>'+
+ '<div class="incident"><div class="eyebrow">Incident '+(l.step+1)+' of 4</div><h3>'+c.title+'</h3><p>'+c.story+'</p></div><div class="grid">'+c.choices.map(([name,cost,dl,nl],i)=>card(name,money(cost)+' response cost'+(dl+nl?' · '+num(dl+nl)+' tickets at risk':''),
+ '<button data-live="'+i+'" '+(cost>available()?'disabled':'')+'>Choose response</button>')).join('')+'</div>'+
+ (c.choices.every(x=>x[1]>available())?'<div class="warn">You cannot pay for a safe response. End the event and refund remaining tickets.</div><button data-stop>Call a safe stop</button>':'')+
+ (l.log.length?table(['Last incident','Response','Outcome'],l.log.slice(-1).map(x=>[x.title,x.choice,x.outcome])):'');
+}
+function sponsorAudit(count,food){
+ return active('sponsors').map(k=>{
+  const met={milo:count>=2200&&s.roles.market>=3,telco:count>=3100&&hasDigital(),bank:!!s.schedule.charity&&count>=2200,water:count>=1800&&s.ops.water,
+   ichitan:count>=3050&&hasDigital(),afteryou:count>=2900&&s.stalls.snacks,tao:count>=2750&&(s.schedule.dance||actsBooked().some(a=>a[6]==='school'&&slotFor(a[0]))),ais:count>=3150&&s.schedule.stem&&hasDigital()}[k];
+  const bonus=(met?{ichitan:food.drinks>=550?45000:0,afteryou:food.units>=720?35000:0,tao:food.units>=750?28000:0,ais:count>=3450?60000:0}[k]:0)||0;
+  const deposit=Math.round(sponsors[k][1]*.35);
+  const earned=met?sponsors[k][1]+bonus:0;
+  return {name:sponsors[k][0],earned,claw:met?0:deposit,bonus};
+ });
+}
+function results(){
+ const l=s.live, count=l.day+l.night, food=concessions(l.day,l.night), audit=sponsorAudit(count,food), sponsorship=sum(audit.map(x=>x.earned));
+ const auction=s.schedule.charity&&count>=2200?shows.charity[3]:0;
+ const ticketNet=s.tickets.revenue-l.refunds;
+ const cancellation=s.cancellation||0;
+ const surplus=ticketNet+stallCash()+food.share+sponsorship+auction-costs()-l.extra-cancellation;
+ const charity=Math.max(0,surplus), won=count>=3001&&charity>=100000&&!l.stopped;
+ const rows=[['Ticket revenue after refunds',money(ticketNet)],['Stall rent',money(stallCash())],['School commission on food and drinks',money(food.share)],['Sponsor income including bonuses',money(sponsorship)],['Charity auction',money(auction)],['Planning costs',money(-costs())],['Artist cancellation fees',money(-cancellation)],['Live response costs',money(-l.extra)],['Net surplus / deficit','<b>'+money(surplus)+'</b>']];
+ return phaseTitle(won?'Festival mission achieved':'Festival mission incomplete')+'<div class="'+(won?'ok':'warn')+'"><b>'+num(count)+' admitted · '+money(charity)+' available for charity · '+l.rating+'/100 guest experience</b><br>'+ (l.stopped?'Festival stopped safely because the response budget ran out.':'Attendance target '+(count>=3001?'met':'missed')+' · Charity target '+(charity>=100000?'met':'missed'))+'</div>'+
+ '<h3>Financing</h3><p>Loan principal '+money(s.loan||0)+' · Event finance fee '+money(financeFee())+' (included in planning costs). Opening funds and loans are repayable funding. The surplus below measures what the event earned after its costs.</p><h3>Food and drink sales</h3><p>'+num(food.units)+' meals / snacks · '+num(food.drinks)+' sponsor drinks · '+money(food.gross)+' vendor sales · '+money(food.share)+' paid to the school.</p><h3>Finance report</h3>'+table(['Item','Amount'],rows)+
+ (audit.length?'<h3>Sponsor audit</h3>'+table(['Contract','Total earned','Bonus included','Deposit returned'],audit.map(x=>[x.name,money(x.earned),money(x.bonus),money(x.claw)])):'')+
+ '<h3>Incident log</h3>'+table(['Incident','Decision','Cost','Lost admissions','Outcome'],l.log.map(x=>[x.title,x.choice,money(x.cost),x.lost,x.outcome]))+
+ '<h3>Debrief</h3><p>Which decision had the biggest effect on charity proceeds? Which two changes would let you admit more people safely? Would you hire the same headliner again?</p><button data-ui="reset">Run another festival</button>';
+}
+const screens=[booking,programme,vendor,selling,staffing,eventDay,results];
+const app=byId('app');
+function render(){
+ cancelAnimationFrame(mapFrame);
+ const forecast=s.tickets||estimateTickets();
+ const actual=s.live?s.live.day+s.live.night:forecast.count;
+ app.dataset.phase=s.phase;
+ app.innerHTML='<section class="kpis" aria-label="Festival status"><div class="kpi"><small>Working cash</small><strong>'+money(available())+'</strong></div><div class="kpi"><small>'+(s.live?'Admissions':s.tickets?'Tickets sold':'Forecast tickets')+'</small><strong>'+num(actual)+'</strong></div><div class="kpi"><small>Confirmed artists</small><strong>'+actsBooked().length+'</strong></div><div class="kpi"><small>Teacher team</small><strong>'+staffCount()+'/30</strong></div></section><div class="workbench"><nav class="rail" aria-label="Planning phases">'+['International','Local artists','School bands',...phases.slice(1)].map((title,index)=>{
+ const phase=index<3?0:index-2;
+ const tab=['headline','local','school'][index];
+ const current=phase===s.phase&&(phase!==0||tab===(s.bookingTab||'headline'));
+ return '<button data-nav="'+index+'" class="'+(current?'on':'')+'" '+(s.phase>=5?'disabled':'')+'><b>'+(index+1)+'</b>'+title+'</button>';
+}).join('')+'</nav><section id="build-drawer" class="panel">'+(s.phase>0&&s.phase<5?cashLine():'')+screens[s.phase]()+'</section></div>';
+ mapShell();
+ paintCardArt();
+}
+function paintCardArt(){
+ document.querySelectorAll('.card-art').forEach((canvas,index)=>{
+  canvas.width=600;canvas.height=240;
+  const c=canvas.getContext('2d'),title=canvas.dataset.art.toLowerCase();
+  const hue=(index*47+260)%360;
+  const gradient=c.createLinearGradient(0,0,600,240);
+  gradient.addColorStop(0,'hsl('+hue+' 65% 33%)');gradient.addColorStop(1,'hsl('+(hue+65)+' 75% 14%)');
+  c.fillStyle=gradient;c.fillRect(0,0,600,240);
+  c.fillStyle='#ffffff12';
+  for(let i=0;i<5;i++){c.beginPath();c.moveTo(80+i*120,0);c.lineTo(-150+i*160,240);c.lineTo(120+i*160,240);c.closePath();c.fill();}
+  const food=/rice|noodles|chicken|pork|tofu|taco|roti|boba|fruit|milk|dessert|tea|bao|tteok|slush|satay|ice cream/.test(title);
+  const game=/basket|darts|football|tower|ring toss|beanbag|game|quiz/.test(title);
+  if(food){
+   c.fillStyle='#fff0c9';c.beginPath();c.ellipse(300,167,128,46,0,0,7);c.fill();
+   c.fillStyle='#f99c59';c.beginPath();c.ellipse(300,146,100,43,0,0,7);c.fill();
+   for(let i=0;i<17;i++){c.fillStyle=['#ffd878','#7fce87','#e65e53'][i%3];c.beginPath();c.ellipse(224+(i*39)%155,126+(i*17)%43,12,5,i,0,7);c.fill();}
+   c.strokeStyle='#ffeac8';c.lineWidth=4;for(let i=0;i<3;i++){c.beginPath();c.moveTo(265+i*35,90);c.bezierCurveTo(245+i*35,65,290+i*35,55,270+i*35,30);c.stroke();}
+  }else if(game){
+   for(let i=4;i>0;i--){c.fillStyle=i%2?'#ffe4ac':'#f26979';c.beginPath();c.arc(300,116,i*24,0,7);c.fill();}
+   c.fillStyle='#faf4dd';c.fillRect(296,12,8,208);c.fillRect(196,112,208,8);
+   c.fillStyle='#14263d';c.beginPath();c.arc(300,116,13,0,7);c.fill();
+  }else{
+   c.fillStyle='#11172e';c.fillRect(60,183,480,24);
+   for(const x of [65,470]){c.fillStyle='#202942';c.fillRect(x,92,65,90);for(const y of [115,155]){c.fillStyle='#0b1226';c.beginPath();c.arc(x+32,y,19,0,7);c.fill();c.strokeStyle='#b08bff';c.lineWidth=2;c.stroke();}}
+   c.save();c.translate(295,120);c.rotate(.32);
+   c.fillStyle='#ffb780';c.beginPath();c.ellipse(0,25,36,46,0,0,7);c.fill();c.fillStyle='#e86f7b';c.beginPath();c.ellipse(0,-5,29,29,0,0,7);c.fill();
+   c.fillStyle='#ffe4b0';c.fillRect(-7,-90,14,112);c.fillStyle='#18233e';c.beginPath();c.arc(0,21,12,0,7);c.fill();c.restore();
+   c.fillStyle='#fff4d0';for(let i=0;i<12;i++){c.beginPath();c.arc(90+i*38,38,4,0,7);c.fill();}
+   c.fillStyle='#0b1429';for(let i=0;i<23;i++){c.beginPath();c.arc(i*28,238-(i%4)*5,13,0,7);c.fill();}
+  }
+ });
+}
+function refresh(up=false){s.placements=s.placements||{};save();render();if(up)byId('build-drawer').scrollIntoView({block:'start',behavior:'instant'})}
+function next(){
+ if(s.phase===0){
+ const tab=s.bookingTab||'headline';
+ if(tab==='headline'){if(!actsBooked().some(a=>a[6]==='headline'))return;s.bookingTab='local';refresh();return;}
+ if(tab==='local'){s.bookingTab='school';refresh();return;}
+ if(!bookingComplete())return;
+}
+ if(s.phase===1&&scheduleIssues().length)return;
+ if(s.phase===2&&(!bookingComplete()||scheduleIssues().length)){s.phase=bookingComplete()?1:0;refresh();return;}
+ if(s.phase===2&&(Object.keys(zoneCaps).some(z=>used(z)>zoneCaps[z])||sponsorClash()||active('sponsors').some(k=>!sponsorPitch(k)[0])))return;
+ if(s.phase===3){if(!s.rivalSeen||!s.rivalResponse)return;s.tickets=estimateTickets();}
+ if(s.phase===4){
+  if(readiness().length)return;
+  liveStart();
+ }
+ s.phase++;
+ refresh(true);
+}
+function setNumber(el,min,max,fallback){
+ const value=el.valueAsNumber;
+ return Number.isFinite(value)?Math.max(min,Math.min(max,Math.round(value))):fallback;
+}
+document.addEventListener('change',e=>{
+ const el=e.target, d=el.dataset;
+ if(d.bid){
+  s.bids[d.bid]=setNumber(el,1000,4000000,acts.find(x=>x[0]===d.bid)[3]);
+  el.value=s.bids[d.bid];save();return;
+ }
+ if(d.slot){if(el.value)s.schedule[d.slot]=el.value;else delete s.schedule[d.slot];}
+ else if(d.price!==undefined)s.prices[Number(d.price)]=setNumber(el,0,1500,s.prices[Number(d.price)]);
+ else if(d.staff)s.roles[d.staff]=setNumber(el,0,30,s.roles[d.staff]);
+ else if(d.setting){
+  const key=d.setting;
+  s[key]=setNumber(el,key==='stock'?500:30,key==='stock'?3950:70,s[key]);
+ }else return;
+ // Update numbers and guards in place, leaving controls available for the pending click.
+ save();
+ if(d.slot){render();return;}
+ el.value=d.price!==undefined?s.prices[Number(d.price)]:d.staff?s.roles[d.staff]:s[d.setting];
+ const updated=document.createElement('div');
+ updated.innerHTML=screens[s.phase]();
+ const nextButton=byId('next');
+ nextButton.disabled=updated.querySelector('#next').disabled;
+ const oldWarning=app.querySelector('.panel > .warn');
+ const newWarning=updated.querySelector('.warn');
+ if(oldWarning)oldWarning.remove();
+ if(newWarning)nextButton.closest('.sticky').before(newWarning);
+ const confirmations=app.querySelectorAll('.panel > .ok');
+ const latest=updated.querySelectorAll('.ok');
+ for(let i=0;i<Math.min(confirmations.length,latest.length);i++)confirmations[i].innerHTML=latest[i].innerHTML;
+ const kpis=app.querySelectorAll('.kpi strong');
+ kpis[0].textContent=money(available());
+ kpis[1].textContent=num((s.tickets||estimateTickets()).count);
+ kpis[3].textContent=staffCount()+'/30';
+});
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');
+ if(!b||b.disabled)return;
+ const d=b.dataset;
+ if('borrow' in d){
+  if(s.phase>=5||(s.loan||0)>=creditLimit)return;
+  s.loan=(s.loan||0)+250000;refresh();return;
+ }
+ if(d.nav!==undefined){
+ const index=Number(d.nav),target=index<3?0:index-2;
+ if(s.phase>=5)return;
+ if(target>s.phase){
+ if(target===1&&bookingComplete())s.phase=1;
+ else if(target===2)s.phase=2;
+ else return;
+ }
+ else s.phase=target;
+ if(index<3)s.bookingTab=['headline','local','school'][index];
+ if(s.phase<=3)s.tickets=null;
+ refresh();return;
+ }
+ if(d.ui==='map'||d.ui==='help'){byId(d.ui).showModal();return;}
+ if(d.ui==='reset'){if(window.confirm('Restart and clear this festival plan?')){s=newGame();refresh(true);}return;}
+ if(b.id==='next'){next();return;}
+ if('back' in d&&s.phase>0&&s.phase<5){s.phase--;if(s.phase<=3)s.tickets=null;refresh(true);return;}
+ if(d.concession)s.concession=d.concession;
+ else if('rival' in d)s.rivalSeen=true;
+ else if(d.response&&s.rivalSeen)s.rivalResponse=d.response;
+ else if(d.market&&s.phase===5&&s.live.step===4){
+  const [name,cost]=marketMoves[d.market];
+  if(cost>0&&cost>available())return;
+  s.live.marketMove=d.market;
+  s.live.extra+=cost;
+  s.live.log.push({title:'Evening trading',choice:name,cost,lost:0,outcome:'Evening sales and sponsor bonuses recalculated.'});
+  s.phase=6;
+  refresh(true);return;
+ }
+ else if(d.toggle){const [collection,key]=d.toggle.split(':');s[collection][key]=!checked(collection,key);}
+ else if(d.offer){
+  const a=plannedArtist(d.offer), old=s.offers[d.offer], attempt=(old?.attempts||0)+1;
+  if(old?.accepted)return;
+  const bid=s.bids[a[0]]??Math.round(a[3]*.8/1000)*1000;
+  const identity=[...a[0]].reduce((total,char)=>total+char.charCodeAt(0),0);
+  const floor=Math.round(a[3]*(.78+((s.seed+identity)%29)/100)/1000)*1000;
+  const counter=Math.max(floor,Math.round((a[3]*1.08-attempt*a[3]*.045)/1000)*1000);
+  s.offers[a[0]]={bid,counter,attempts:attempt,accepted:bid>=floor};
+ }else if(d.schoolbook){
+ const a=plannedArtist(d.schoolbook);if(!a||a[6]!=='school'||isBooked(a[0]))return;
+ if(actsBooked().filter(x=>x[6]!=='headline').length>=7||a[3]>available()-75000){b.insertAdjacentHTML('afterend','<p class="warn">Seven support places maximum. Cancel a booking to replace it, and keep ฿75,000 available.</p>');return;}
+ s.booked[a[0]]=a[3];
+ }else if(d.book){
+ const act=plannedArtist(d.book),group=act[6];if(isBooked(d.book))return;
+ if(actsBooked().filter(a=>(a[6]==='headline')===(group==='headline')).length>=(group==='headline'?1:7)){b.insertAdjacentHTML('afterend','<p class="warn">This line-up is full. Cancel an existing booking to replace it.</p>');return;}
+  const offer=s.offers[d.book];if(!offer?.accepted)return;
+  if(offer.bid+(plannedArtist(d.book)[5]>=2?55000:0)>available()-75000){b.insertAdjacentHTML('afterend','<span class="warn">Insufficient booking cash. Borrow at the budget desk, arrange stalls and sponsors, negotiate a lower fee, or choose a different act. Keep ฿75,000 for later costs.</span>');return;}
+  s.booked[d.book]=offer.bid;
+ }else if(d.release){
+  if(!window.confirm('Cancel and pay 20% of the bid as a cancellation fee?'))return;
+  s.cancellation=(s.cancellation||0)+Math.round(s.booked[d.release]*.2);
+  delete s.booked[d.release];delete s.schedule[d.release];if(s.offers[d.release])s.offers[d.release].accepted=false;
+ }else if(d.live!==undefined){runLive(Number(d.live));refresh(true);return;}
+ else if('stop' in d){
+  s.live.stopped=true;s.live.day=0;s.live.night=0;s.live.refunds=s.tickets.revenue;s.phase=6;refresh(true);return;
+ }else return;
+ refresh();
+});
+// The map is a simulation layout. Coordinates are normalised for tablet and desktop.
+const mapPositions = {
+ thai:[.22,.32],halal:[.31,.32],veg:[.40,.32],snacks:[.49,.32],water:[.58,.32],afteryou:[.67,.32],
+ merch:[.37,.59],clubs:[.47,.59],community:[.57,.59],telco:[.67,.59],bank:[.77,.59],
+ milo:[.37,.72],ichitan:[.47,.72],tao:[.57,.72],ais:[.67,.72]
+};
+const plotZones={food:[.22,.78,.30,.43],market:[.34,.79,.57,.73]};
+// Older saves keep their budgets and bookings, but adopt the corrected campus layout.
+if(s.mapLayout!==2){s.placements={};s.mapLayout=2;}
+const mapPalette=['#ffb570','#f2ce6c','#83d5bc','#bda3ff','#87bcf1','#ed9cb7'];
+let selectedPlot=null;
+let mapCanvas=null;
+let mapFrame=0;
+let mapDrag=null;
+let mapTime=0;
+s.placements=s.placements||{};
+function placedItems(){
+ return [...active('stalls').map(k=>({key:k,type:'stalls',name:stalls[k][0],zone:stalls[k][5]})),...active('sponsors').map(k=>({key:k,type:'sponsors',name:sponsors[k][0],zone:sponsors[k][4]}))];
+}
+function coords(item){
+ const assigned=new Map();
+ const items=placedItems();
+ for(const entry of items){
+  const position=s.placements[entry.key]||mapPositions[entry.key];
+  if(position)assigned.set(entry.key,position);
+ }
+ const rows=item.zone==='food'?[.32,.43]:[.59,.72];
+ const columns=item.zone==='food'?[.22,.31,.40,.49,.58,.67,.76]:[.37,.47,.57,.67,.77];
+ const candidates=rows.flatMap(y=>columns.map(x=>[x,y]));
+ for(const entry of items){
+  if(entry.zone!==item.zone||assigned.has(entry.key))continue;
+  const free=candidates.find(([x,y])=>![...assigned.values()].some(([a,b])=>Math.abs(x-a)<.078&&Math.abs(y-b)<.102));
+  assigned.set(entry.key,free||candidates[0]);
+ }
+ return assigned.get(item.key);
+}
+function mapShell(){
+ const root=document.createElement('section');
+ root.id='festival-world';
+ root.innerHTML='<div class="world-top"><div><small>FESTIVAL GROUNDS</small><strong>SISB FEST</strong></div><div class="world-actions"><button id="map-build">＋ Build stalls</button><button id="map-crew">Manage crew</button><button id="map-play">▶ Preview crowd</button></div></div><div class="world-canvas"><canvas id="festival-canvas" aria-label="Interactive festival grounds. Select a stall then select its new location." tabindex="0"></canvas><div class="world-tip">Drag stalls to move them · Tap a stall for controls</div><div id="plot-panel" class="plot-panel"></div></div><div class="world-bottom"><span>● Food court</span><span>● Market & sponsors</span><span id="map-status" role="status">Select a booth or build your first stalls.</span></div>';
+ app.prepend(root);
+ mapCanvas=byId('festival-canvas');
+ mapCanvas.addEventListener('pointerdown',mapDown);
+ mapCanvas.addEventListener('pointermove',mapMove);
+ mapCanvas.addEventListener('pointerup',mapUp);
+ mapCanvas.addEventListener('pointercancel',()=>{mapDrag=null;});
+ byId('map-build').onclick=()=>{if(s.phase>=5){byId('map-status').textContent='The event has opened. Use the control room below.';return;}if(s.phase>=3)s.tickets=null;s.phase=2;refresh();byId('build-drawer').scrollIntoView({behavior:'smooth',block:'start'});};
+ byId('map-crew').onclick=()=>{if(s.phase!==4){byId('map-status').textContent='Confirm ticket sales before assigning the event team.';return;}s.phase=4;refresh();};
+ byId('map-play').textContent=s.mapPreview?'❚❚ Pause crowd':'▶ Preview crowd';
+ byId('map-play').onclick=()=>{s.mapPreview=!s.mapPreview;byId('map-play').textContent=s.mapPreview?'❚❚ Pause crowd':'▶ Preview crowd';save();};
+ mapLoop();
+}
+function mapPoint(e){const r=mapCanvas.getBoundingClientRect();return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height];}
+function hitMap(p){return placedItems().slice().reverse().find(i=>{const q=coords(i);return Math.abs(p[0]-q[0])<.044&&Math.abs(p[1]-q[1])<.057;});}
+function mapDown(e){
+ const p=mapPoint(e),item=hitMap(p);
+ if(item){selectedPlot=item.key;mapDrag={item,start:p,current:p};mapCanvas.setPointerCapture(e.pointerId);showPlot(item);}
+ else if(selectedPlot){const chosen=placedItems().find(i=>i.key===selectedPlot);if(chosen)movePlot(chosen,p);}
+}
+function mapMove(e){if(mapDrag)mapDrag.current=mapPoint(e);}
+function mapUp(e){if(!mapDrag)return;const p=mapPoint(e);if(Math.hypot(p[0]-mapDrag.start[0],p[1]-mapDrag.start[1])>.01)movePlot(mapDrag.item,p);mapDrag=null;}
+function movePlot(item,p){
+ if(s.phase>=5){byId('map-status').textContent='The site is open. Reposition booths during planning.';return;}
+ const zone=plotZones[item.zone];
+ if(p[0]<zone[0]||p[0]>zone[1]||p[1]<zone[2]||p[1]>zone[3]){byId('map-status').textContent='Place this booth inside the '+item.zone+' area. Keep the paths clear.';return;}
+ if(placedItems().some(i=>i.key!==item.key&&Math.abs(coords(i)[0]-p[0])<.078&&Math.abs(coords(i)[1]-p[1])<.102)){byId('map-status').textContent='That space is occupied. Choose a clear spot.';return;}
+ s.placements[item.key]=p.map(n=>Math.round(n*1000)/1000);save();showPlot(item);
+ byId('map-status').textContent=item.name+' moved. Sales forecast updated.';
+ const k=app.querySelector('.kpi strong');if(k)k.textContent=money(available());
+}
+function plotExposure(item){
+ const p=coords(item);
+ return Math.max(.75,1.15-Math.abs(p[0]-.70)*.5-Math.abs(p[1]-(item.zone==='food'?.39:.57))*.5);
+}
+function showPlot(item){
+ const panel=byId('plot-panel');
+ panel.innerHTML='<button class="plot-close" aria-label="Close stall controls">×</button><small>'+item.zone.toUpperCase()+'</small><h3>'+item.name+'</h3><p>Footfall '+Math.round(plotExposure(item)*100)+'%<br>Drag this booth within its zone.</p><div class="actions"><button data-nudge="left">←</button><button data-nudge="up">↑</button><button data-nudge="down">↓</button><button data-nudge="right">→</button></div>';
+ panel.querySelector('.plot-close').onclick=()=>{selectedPlot=null;panel.innerHTML='';};
+ panel.querySelectorAll('[data-nudge]').forEach(b=>b.onclick=()=>{const p=[...coords(item)], d=b.dataset.nudge;if(d==='left')p[0]-=.035;if(d==='right')p[0]+=.035;if(d==='up')p[1]-=.035;if(d==='down')p[1]+=.035;movePlot(item,p);});
+}
+function mapLoop(){
+ cancelAnimationFrame(mapFrame);
+ const frame=()=>{
+  if(!mapCanvas?.isConnected)return;
+  mapTime+=.015;drawWorld();
+  mapFrame=requestAnimationFrame(frame);
+ };
+ frame();
+}
+function drawWorld(){
+ const r=mapCanvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=r.width,h=r.height;
+ if(mapCanvas.width!==Math.round(w*dpr)||mapCanvas.height!==Math.round(h*dpr)){mapCanvas.width=Math.round(w*dpr);mapCanvas.height=Math.round(h*dpr);}
+ const c=mapCanvas.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);
+ const x=n=>n*w,y=n=>n*h;
+ function rect(a,b,ww,hh,color,radius=8){c.fillStyle=color;c.beginPath();c.roundRect(x(a),y(b),x(ww),y(hh),radius);c.fill();}
+ function text(t,a,b,size=12,color='#254b43'){c.fillStyle=color;c.font='800 '+size+'px system-ui';c.textAlign='center';c.fillText(t,x(a),y(b));}
+ rect(0,0,1,1,'#a4cf9c',0);
+ // School buildings retain their real relative positions, compressed for play.
+ function building(a,b,ww,hh,title,subtitle){
+  rect(a+.005,b+.012,ww,hh,'#34564b35',7);rect(a,b,ww,hh,'#f1eee3',7);
+  rect(a+.009,b+.012,ww-.018,.018,'#d6ded7',3);
+  text(title,a+ww/2,b+hh*.58,Math.max(9,Math.min(12,w/95)));
+  if(subtitle)text(subtitle,a+ww/2,b+hh*.80,10);
+ }
+ function pool(a,b,ww,hh,label){
+  rect(a-.009,b-.012,ww+.018,hh+.024,'#f4efe2',4);rect(a,b,ww,hh,'#70c4e2',3);
+  for(let i=1;i<6;i++)rect(a+ww*i/6,b+.008,.001,hh-.016,'#c7edfa',0);
+  text('SWIMMING POOL',a+ww/2,b+hh*.46,Math.max(8,Math.min(11,w/110)),'#245e76');
+  text(label,a+ww/2,b+hh*.68,10,'#245e76');
+ }
+ // Festival avenues: the main east–west walk and the food-truck lane.
+ rect(.035,.465,.87,.065,'#f2e6cf',10);
+ rect(.19,.20,.045,.32,'#f2e6cf',6);
+ rect(.275,.50,.052,.45,'#f2e6cf',9);
+ rect(.84,.27,.055,.66,'#f2e6cf',8);
+ rect(.85,.86,.15,.08,'#d8d9d1',0);
+ building(.035,.08,.18,.20,'SIXTH FORM','Building');
+ pool(.255,.09,.115,.17,'Sixth Form');
+ building(.41,.07,.36,.20,'SPORTS COMPLEX','');
+ pool(.84,.09,.13,.17,'Primary');
+ // Larger playable zones directly below the sports buildings.
+ rect(.17,.27,.65,.19,'#e9dfb1',12);
+ rect(.325,.54,.50,.28,'#c9dfb6',12);
+ text('FOOD & DRINK BOOTHS',.50,.285,11);
+ text('STUDENT MARKET + SPONSORS',.58,.558,10);
+ // Main stage faces the audience on the west side, as on the school map.
+ rect(.025,.59,.225,.32,'#86bb9a',9);
+ rect(.035,.61,.052,.27,'#355369',5);
+ for(let beam=0;beam<3;beam++){
+ c.fillStyle='rgba(255,225,150,'+(0.10+Math.sin(mapTime+beam)*.04)+')';
+ c.beginPath();c.moveTo(x(.087),y(.65+beam*.07));c.lineTo(x(.24),y(.60+beam*.07));c.lineTo(x(.24),y(.75+beam*.05));c.closePath();c.fill();
+}
+ text('MAIN',.061,.72,10,'#fff');text('STAGE',.061,.75,10,'#fff');
+ rect(.098,.61,.052,.27,'#e9c26b',4);text('VIP',.124,.76,10,'#57452a');
+ rect(.16,.61,.078,.27,'#b8dfbf',4);text('AUDIENCE',.198,.76,9);
+ for(let j=0;j<5;j++){
+  rect(.255,.62+j*.052,.023,.034,'#ed8774',3);
+  rect(.258,.625+j*.052,.015,.012,'#fff3d6',1);
+ }
+ text('FOOD TRUCKS',.28,.935,9);
+ building(.355,.845,.46,.10,'SILAPIROM · CAMC','Creative Arts & Media Centre');
+ rect(.83,.34,.12,.075,'#f1bc67',7);text('SECOND STAGE',.89,.385,10);
+ building(.895,.55,.095,.085,'MUGS & HUGS','Café');
+ rect(.235,.535,.037,.045,'#fff6ec',4);text('+',.253,.57,20,'#d75d64');
+ text('FIRST AID',.248,.60,8);
+ rect(.835,.74,.065,.055,'#5caec0',5);text('GATE 5',.868,.775,10,'#fff');
+ text('CHECK-IN',.92,.79,9);
+ c.fillStyle='#c4c8b1';c.beginPath();c.ellipse(x(.917),y(.9),x(.057),y(.075),0,0,7);c.fill();
+ c.strokeStyle='#f7f3dc';c.lineWidth=2;c.beginPath();c.ellipse(x(.917),y(.9),x(.043),y(.057),0,0,7);c.stroke();
+ c.fillStyle='#7ab8c4';c.beginPath();c.arc(x(.917),y(.9),Math.min(x(.016),y(.022)),0,7);c.fill();
+ for(let i=0;i<23;i++){
+  const a=.035+i*.034,b=i%2?.035:.98;
+  c.fillStyle=i%2?'#639d73':'#7eb083';c.beginPath();c.arc(x(a),y(b),Math.min(9,w/100),0,7);c.fill();
+ }
+ // Animated dots preview the route from the gate to stalls and stages.
+ if(s.mapPreview){
+  const total=s.tickets?.count||estimateTickets().count;
+  const guests=Math.max(15,Math.min(100,Math.round(total/40)));
+  for(let i=0;i<guests;i++){
+   const t=(mapTime*.025+i/guests)%1;
+   let a,b;
+   if(t<.30){a=.866+(i%3-1)*.008;b=.84-t*1.14;}
+   else if(t<.85){a=.866-(t-.30)*1.35;b=.495+Math.sin(i*5)*.013;}
+   else{a=.30+(i%3-1)*.008;b=.495+(t-.85)*2.7;}
+   c.fillStyle=['#f6a97b','#597bb9','#f6e7a2','#9e79af'][i%4];c.beginPath();c.arc(x(a),y(b),3.5,0,Math.PI*2);c.fill();
+  }
+ }
+ placedItems().forEach((item,i)=>{
+  const pos=mapDrag?.item.key===item.key?mapDrag.current:coords(item),a=pos[0],b=pos[1],color=mapPalette[i%mapPalette.length];
+  rect(a-.038,b-.027,.081,.075,'#254b4330',5);
+  rect(a-.041,b-.052,.078,.066,'#fff4dc',4);
+  rect(a-.045,b-.061,.086,.032,color,4);
+  for(let j=0;j<4;j++)rect(a-.043+j*.022,b-.061,.011,.032,'#ffffff70',0);
+  rect(a-.031,b+.004,.057,.016,'#87674d',2);
+  if(selectedPlot===item.key){c.strokeStyle='#fff';c.lineWidth=3;c.strokeRect(x(a-.05),y(b-.07),x(.1),y(.12));}
+  const title=item.name.length>18?item.name.slice(0,16)+'…':item.name;
+  text(title,a,b+.075,Math.max(9,Math.min(12,w/90)));
+  if(s.mapPreview)for(let j=0;j<Math.round(plotExposure(item)*4);j++){c.fillStyle='#526489';c.beginPath();c.arc(x(a+(j%2)*.011),y(b+.10+Math.floor(j/2)*.014),2.5,0,7);c.fill();}
+ });
+ text('SISB CAMPUS · BUILDINGS COMPRESSED / BOOTH AREAS ENLARGED',.5,.98,9,'#365a4c');
+}
+
+render();
+</script>
+</body></html>
