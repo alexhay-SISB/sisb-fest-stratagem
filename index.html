@@ -278,9 +278,51 @@ button:focus-visible{outline:3px solid #7144a4;outline-offset:3px}
 #reset-dialog::backdrop{background:#29203b99}
 #reset-dialog .actions{justify-content:flex-end}
 </style>
+<style>
+#help{width:min(810px,calc(100% - 28px));max-width:none;max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px);padding:0;border:1px solid #d5c6e0;border-radius:20px;background:#fffaf3;overflow:hidden;box-shadow:0 24px 70px #1d113966}
+#help [hidden]{display:none!important}
+.guide-layout{display:flex;flex-direction:column;max-height:calc(100vh - 30px);max-height:calc(100dvh - 30px)}
+.guide-head,.guide-toolbar,.guide-footer{display:flex;align-items:center;gap:12px;padding:14px clamp(14px,3vw,28px);flex-shrink:0}
+.guide-head{justify-content:space-between;background:#382651;color:#fff9f2}
+.guide-head h2{font-size:clamp(1.45rem,4vw,2.1rem);margin:0;letter-spacing:-.025em;line-height:1.12}
+.guide-head form{float:none;margin:0}
+.guide-head button{background:#fff5e6;color:#382651;text-wrap:nowrap}
+.guide-toolbar{background:#f2e9fa;border-bottom:1px solid #d5c6e0;align-items:end}
+.guide-toolbar label{min-width:0;display:grid;gap:4px;font-size:.82rem}
+.guide-toolbar label:first-child{flex:0 1 150px}
+.guide-toolbar label:last-child{flex:1}
+.guide-toolbar select{width:100%;max-width:none;margin:0}
+.guide-content{overflow-y:auto;overscroll-behavior:contain;min-height:0;padding:20px clamp(14px,3vw,28px) 26px}
+.guide-kicker{color:#694796;margin:0 0 5px;font-weight:800;font-size:.86rem}
+.guide-page h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:clamp(1.35rem,4vw,1.85rem);margin:0 0 14px}
+.guide-page h4{margin:18px 0 7px;color:#513480;font-size:1.02rem}
+.guide-steps{padding-inline-start:1.6rem;margin:8px 0 12px}
+.guide-steps li{margin:0 0 8px;padding-inline-start:.25rem}
+.guide-steps li::marker{font-weight:800;color:#694796}
+.guide-note{background:#fff0d8;border-inline-start:4px solid #ce9050;border-radius:8px;padding:10px 13px;margin:10px 0}
+.guide-table{overflow-x:auto;margin:12px 0;border:1px solid #d5c6e0;border-radius:10px}
+.guide-table th,.guide-table td{border-color:#ded2e8;vertical-align:top}
+.guide-table th{background:#513480;color:white}
+.guide-table td{background:#fffdf9}
+.guide-table tr:nth-child(even) td{background:#f5edf9}
+.guide-footer{justify-content:space-between;border-top:1px solid #d5c6e0;background:#f2e9fa}
+#guide-progress{font-weight:800;color:#574762;font-size:.86rem}
+#guide-references{margin-top:20px;border-top:1px solid #d5c6e0;color:#574762;font-size:.9rem}
+.step-guide{display:flex;justify-content:flex-end;margin-bottom:14px}
+.step-guide button{background:#f2e9fa;color:#513480;border-color:#b89dcf}
+@media(max-width:500px){
+ #help{width:calc(100% - 12px);max-height:calc(100dvh - 12px);border-radius:13px}
+ .guide-layout{max-height:calc(100dvh - 14px)}
+ .guide-head,.guide-toolbar,.guide-footer{padding:9px 12px;gap:8px}
+ .guide-toolbar select{padding:6px}
+ .guide-content{padding:14px 12px 18px}
+ .guide-table th,.guide-table td{padding:6px;font-size:.84rem}
+ .guide-page:lang(zh-CN) .guide-table td{overflow-wrap:anywhere}
+}
+</style>
 </head>
 <body>
-<header class="mast"><div class="shell"><div class="wordmark"><span class="mark" aria-hidden="true"></span><h1>SISB Fest Stratagem</h1></div><div class="tools"><button data-ui="map">Campus map</button><button data-ui="help">How to play</button><button id="reset-game" type="button" data-ui="reset" aria-haspopup="dialog">Reset game</button></div></div></header>
+<header class="mast"><div class="shell"><div class="wordmark"><span class="mark" aria-hidden="true"></span><h1>SISB Fest Stratagem</h1></div><div class="tools"><button data-ui="map">Campus map</button><button data-ui="help" aria-haspopup="dialog">How to play</button><button id="reset-game" type="button" data-ui="reset" aria-haspopup="dialog">Reset game</button></div></div></header>
 <main class="shell"><div id="app"></div></main>
 <dialog id="reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
  <h2 id="reset-title">Reset this game?</h2>
@@ -291,10 +333,405 @@ button:focus-visible{outline:3px solid #7144a4;outline-offset:3px}
  </form>
 </dialog>
 <dialog id="map"><form method="dialog"><button>Close map</button></form><h2>Official 2025 event map</h2><p>Use the school’s map to orient your team. Gate 5 at Mugs and Hugs is the published access point. Simulator zones, limits and timings are planning assumptions.</p><a id="maplink" target="_blank" rel="noopener"><img id="mapimage" alt="Official SISB Fest 2025 campus event map"></a><p><a href="https://sites.google.com/sisbschool.com/sisbfest/about-sisb-fest/2025" target="_blank" rel="noopener">Open the school's map and archive</a></p></dialog>
-<dialog id="help"><form method="dialog"><button>Close guide</button></form><h2>Run the festival</h2><p>Use one device and one game tab per team. Every team opens the same link and plays its own festival. Decide who runs Finance, Programme and Operations. Discuss each phase, then lock it in. You begin with a maximum starting budget of ฿3.1 million. Borrow up to ฿1 million separately, with a 2% finance fee. Earn additional money from ticket sales, stalls and sponsors. For a win, admit 3,001 or more people, finish safely and raise at least ฿100,000 for charity after covering your costs.</p><p>Allow roughly 5 min to start, 12 min for bids, 13 min for scheduling, 13 min for stalls and sponsorship, 11 min for ticketing, 13 min for staffing, 15 min for live decisions and 8 min for debrief. Ask teams to defend one safety decision and explain which expense or sponsor made the biggest difference.</p><p>Real artist names and releases are used as classroom examples. Bids, availability, sponsors, costs, capacities and audience figures are fictional. The attendance goal measures total entries across two sessions, while operating limits apply at any one time.</p>
-<ul><li><a href="https://sites.google.com/sisbschool.com/sisbfest/home">SISB Fest home</a>, <a href="https://sites.google.com/sisbschool.com/sisbfest/about-sisb-fest/2025">2025 event and map</a>, <a href="https://sites.google.com/sisbschool.com/sisbfest/location">campus access at Gate 5</a></li>
+<dialog id="help" aria-labelledby="guide-title">
+ <div class="guide-layout">
+  <header class="guide-head">
+   <h2 id="guide-title">How to play</h2>
+   <form method="dialog"><button type="submit" id="guide-close" autofocus>Back to game</button></form>
+  </header>
+  <div class="guide-toolbar">
+   <label for="guide-language"><span>Language / 语言</span>
+    <select id="guide-language"><option value="en">English</option><option value="zh-CN" lang="zh-CN">简体中文</option></select>
+   </label>
+   <label for="guide-chapter"><span id="guide-chapter-label">Jump to a chapter</span><select id="guide-chapter"></select></label>
+  </div>
+  <div id="guide-content" class="guide-content">
+<article class="guide-page" lang="en" data-chapter="0" hidden>
+<p class="guide-kicker">One device. One tab. One festival per team.</p>
+<h3 tabindex="-1">Start your festival</h3>
+<h4>Get set up</h4>
+<ol class="guide-steps" start="1">
+<li>You are already in the game. Use the chapter menu to find your next step. Close this guide to make your choices, then reopen it whenever you need help.</li>
+<li>Choose who will click, who will check the money and who will check the schedule. Discuss each decision together.</li>
+<li>Look below the festival map for the numbered buttons. Start at <strong>1 International</strong>. If the browser shows an old game and your teacher wants a fresh start, click <strong>Reset game</strong> at the top and confirm. It clears the save on that browser.</li>
+<li>Keep playing in the same tab. Progress is saved in that browser. Each team opens the same link on its own device.</li>
+</ol>
+<h4>Know what you need to win</h4>
+<aside class="guide-note">At least <strong>3,001 actual admissions</strong>, at least <strong>THB 100,000 available for charity</strong>, and a festival that finishes safely. Your festival runs from 15:00 to 21:00.</aside>
+<h4>Read the numbers at the top</h4>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">On screen</th><th scope="col">What it means</th></tr></thead><tbody><tr><td>Working cash</td><td>Cash still available. Your THB 3,100,000 budget minus THB 335,000 for the site and cleaning leaves THB 2,765,000 at the start.</td></tr><tr><td>Forecast tickets</td><td>Estimated sales. This changes to Tickets sold, then to Admissions.</td></tr><tr><td>Confirmed artists</td><td>Number of music acts booked. Aim for 8.</td></tr><tr><td>Teacher team</td><td>Number of teachers assigned out of 30.</td></tr></tbody></table></div>
+<h4>If you need more cash</h4>
+<ol class="guide-steps" start="5">
+<li>Find <strong>Budget desk</strong> in the current step. Click <strong>Borrow THB 250,000 (+THB 5,000 fee)</strong> once per amount you need. The fee is 2%. You get THB 245,000 more working cash after the fee. You can borrow at most THB 1,000,000 in total.</li>
+</ol>
+</article>
+<article class="guide-page" lang="en" data-chapter="1" hidden>
+<p class="guide-kicker">Game step 1   •   International</p>
+<h3 tabindex="-1">Book your headliner</h3>
+<h4>Make the first offer</h4>
+<ol class="guide-steps" start="1">
+<li>Click <strong>1 International</strong>. Scroll down past <strong>Budget desk</strong> to the act cards.</li>
+<li>Read <strong>Estimated audience appeal</strong> and <strong>Guide fee</strong>. Appeal is a game score that affects ticket demand. The guide fee is a starting point for negotiation.</li>
+<li>For this example, find <strong>Tilly Birds</strong>. The guide fee is THB 365,000. Click the <strong>Offer in baht</strong> box and enter <strong>292000</strong>. Type digits only, without commas. The game may already have this number filled in.</li>
+<li>Click <strong>Submit bid</strong> on that same card. Read the message above the buttons.</li>
+</ol>
+<h4>Read the reply and finish the booking</h4>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">Reply on screen</th><th scope="col">What to do</th></tr></thead><tbody><tr><td>Agent declined. Counteroffer …</td><td>Read the amount the agent suggests. Replace your old bid with that amount, then click Submit bid again. For example, if the agent asks for THB 378,000, enter 378000.</td></tr><tr><td>Offer accepted</td><td>Click Confirm booking on the same card. An accepted offer alone is not a booking.</td></tr><tr><td>Booked</td><td>Check that this message shows your agreed price and that the artist count has gone up to 1.</td></tr></tbody></table></div>
+<ol class="guide-steps" start="5">
+<li>Scroll to the bottom of the act list. Click <strong>Next · Local acts</strong>. If it is greyed out, go back to the headliner card and look for <strong>Confirm booking</strong>.</li>
+</ol>
+<h4>Before you spend more</h4>
+<aside class="guide-note">You can book <strong>one headliner</strong>. A different offer might cost much more. Overseas headline acts add THB 55,000 for travel. Changing a confirmed booking with <strong>Cancel (20% fee)</strong> costs 20% of its fee.</aside>
+<aside class="guide-note">Stray Kids have an in-game appeal score of 50,000 and can fill the festival quickly at suitable prices. Their guide fee is THB 2,400,000. Use Tilly Birds to follow this example and compare the risk of the more expensive act on another run.</aside>
+</article>
+<article class="guide-page" lang="en" data-chapter="2" hidden>
+<p class="guide-kicker">Game steps 2 and 3   •   Local artists and School bands</p>
+<h3 tabindex="-1">Add seven support acts</h3>
+<h4>Book one local artist</h4>
+<ol class="guide-steps" start="1">
+<li>At <strong>2 Local artists</strong>, find <strong>GOODMOOD</strong>. Enter <strong>76000</strong> in <strong>Offer in baht</strong> and click <strong>Submit bid</strong>.</li>
+<li>If the offer is declined, enter the counteroffer shown and click <strong>Submit bid</strong> again. When accepted, click <strong>Confirm booking</strong>. Look for <strong>Booked</strong> and <strong>1/7 support acts</strong>.</li>
+<li>Scroll to the bottom. Click <strong>Next · School bands</strong>.</li>
+</ol>
+<h4>Book six school bands</h4>
+<ol class="guide-steps" start="4">
+<li>Find the six cards below. On each card, click <strong>Book for THB …</strong>. Even when the price is THB 0, you must click the button. You do not need to make an offer.</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">School band card</th><th scope="col">Fee</th></tr></thead><tbody><tr><td>Neon Tigers</td><td>THB 0</td></tr><tr><td>After School Static</td><td>THB 4,000</td></tr><tr><td>Tiger Tape</td><td>THB 5,000</td></tr><tr><td>Riverline</td><td>THB 0</td></tr><tr><td>Northside Noise</td><td>THB 7,000</td></tr><tr><td>Velvet Voltage</td><td>THB 8,000</td></tr></tbody></table></div>
+<ol class="guide-steps" start="5">
+<li>Check the summary. It should show <strong>1/1 headliner</strong> and <strong>7/7 support acts</strong>. <strong>Confirmed artists</strong> at the top should be <strong>8</strong>.</li>
+<li>Scroll to the bottom and click <strong>Lock eight-act line-up</strong>. You should land on <strong>4 Schedule</strong>.</li>
+</ol>
+<aside class="guide-note">You can use a different mix of local and school acts. The two menus share seven places. If you want to skip local artists, click <strong>Next · School bands</strong> and book seven school bands. Use the same timetable on the next page by replacing the example names.</aside>
+</article>
+<article class="guide-page" lang="en" data-chapter="3" hidden>
+<p class="guide-kicker">Game step 4   •   Schedule</p>
+<h3 tabindex="-1">Fill all 12 schedule slots</h3>
+<h4>Put one act in each box</h4>
+<ol class="guide-steps" start="1">
+<li>Look at the timetable at the top of <strong>Plan the two-stage programme</strong>. Scroll below it to the act cards.</li>
+<li>Find <strong>GOODMOOD</strong>, click its <strong>Unscheduled</strong> menu and select <strong>15:00–16:00 · main</strong>. The timetable updates automatically.</li>
+<li>Repeat for each act in the table below. Read both the time and the stage before you click. The <strong>main</strong> and <strong>community</strong> options at the same time are two different slots.</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">Time</th><th scope="col">Main stage · main</th><th scope="col">Community stage · community</th></tr></thead><tbody><tr><td>15:00–16:00</td><td>GOODMOOD</td><td>Neon Tigers</td></tr><tr><td>16:00–17:00</td><td>After School Static</td><td>Charity auction</td></tr><tr><td>17:00–18:00</td><td>Tiger Tape</td><td>Primary choir</td></tr><tr><td>18:00–19:00</td><td>Student magic and illusion show</td><td>Riverline</td></tr><tr><td>19:00–20:00</td><td>Northside Noise</td><td>Student dance crews</td></tr><tr><td>20:00–21:00</td><td>Tilly Birds</td><td>Velvet Voltage</td></tr></tbody></table></div>
+<h4>Check and lock</h4>
+<ol class="guide-steps" start="4">
+<li>Look at the timetable again. Every box should show exactly one name. <strong>Available</strong> means a slot is empty. Two names separated by a slash mean that two acts are in one slot.</li>
+<li>To fix a clash, go back to one of the act cards and choose the correct slot. Choose <strong>Unscheduled</strong> to remove an act from the timetable. Leave all unused show cards on <strong>Unscheduled</strong>.</li>
+<li>Check you have <strong>eight music acts</strong>, music on both stages, <strong>Primary choir</strong>, <strong>Charity auction</strong>, and two other shows. Your headliner must be on the main stage from 18:00 onwards. Click <strong>Lock programme</strong>.</li>
+</ol>
+<aside class="guide-note">For this plan, the charity auction must go on the community stage and the magic show on the main stage. The other stage choices shown in each menu depend on the act.</aside>
+</article>
+<article class="guide-page" lang="en" data-chapter="4" hidden>
+<p class="guide-kicker">Game step 5   •   Stalls &amp; sponsors</p>
+<h3 tabindex="-1">Reserve stalls and set food prices</h3>
+<h4>Fill the food court</h4>
+<ol class="guide-steps" start="1">
+<li>Scroll to the stall cards under <strong>Build the market and food court</strong>. On each food stall below, click <strong>Reserve spaces</strong> once. A tick means the stall is reserved. Click a ticked button again to remove that stall.</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">Food stall card</th><th scope="col">Spaces</th></tr></thead><tbody><tr><td>Halal chicken biryani &amp; beef satay</td><td>2</td></tr><tr><td>Tofu pad kra pao &amp; vegetable spring rolls</td><td>2</td></tr><tr><td>Mango sticky rice &amp; coconut ice cream</td><td>2</td></tr><tr><td>Pad kra pao chicken with fried egg</td><td>1</td></tr><tr><td>Boat noodles with beef &amp; morning glory</td><td>2</td></tr><tr><td>Thai milk tea &amp; brown-sugar boba</td><td>1</td></tr><tr><td>Watermelon slush &amp; pineapple cups</td><td>1</td></tr><tr><td>Banana roti with condensed milk</td><td>1</td></tr></tbody></table></div>
+<ol class="guide-steps" start="2">
+<li>Check <strong>Food court 12/12 booth spaces</strong>. This example gives 1,675 servings per session before any adjustment for location or staffing. Rent on the stall cards is money the festival receives.</li>
+</ol>
+<h4>Add two market stalls</h4>
+<ol class="guide-steps" start="3">
+<li>Click <strong>Reserve spaces</strong> on <strong>Student-designed tote bags &amp; enamel pins</strong> (2 spaces) and <strong>Basketball shootout</strong> (1 space). The market should show <strong>3/9</strong> before sponsors.</li>
+<li>Under <strong>Food pricing</strong>, click <strong>Choose regular prices</strong>. It uses THB 110 as the average price. The school gets 15% of food sales. <strong>Value menu</strong> can get more buyers but costs a subsidy. <strong>Premium prices</strong> can reduce demand.</li>
+</ol>
+<aside class="guide-note">Food court and market have separate limits: <strong>12 food spaces</strong>, <strong>9 market spaces</strong>. A stall can use more than one space even if it has only one icon on the map. Sponsor booths also take spaces.</aside>
+</article>
+<article class="guide-page" lang="en" data-chapter="5" hidden>
+<p class="guide-kicker">Game step 5 continued   •   Stalls &amp; sponsors</p>
+<h3 tabindex="-1">Sign sponsors and check the map</h3>
+<h4>Sign three sponsor contracts</h4>
+<ol class="guide-steps" start="1">
+<li>Scroll to <strong>Sponsor contracts</strong>. Read each card&#x27;s conditions. <strong>Offer available</strong> means you can sign now. <strong>Offer locked</strong> means you need to meet the condition shown first.</li>
+<li>Click <strong>Sign contract</strong> for the three sponsors in the table. This example opens all three offers after the programme is locked.</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">Sponsor card</th><th scope="col">What to check</th></tr></thead><tbody><tr><td>Community bank sponsor</td><td>Charity auction scheduled. Needs 2,200 admissions. Uses 1 market space.</td></tr><tr><td>MILO chocolate drinks booth</td><td>Needs 2,200 attendees and at least 3 market teachers. Uses 2 market spaces.</td></tr><tr><td>Mobile network sponsor</td><td>Needs 3,100 admissions and a digital campaign. Uses 2 market spaces. Choose Student reels &amp; artist teasers in step 6.</td></tr></tbody></table></div>
+<ol class="guide-steps" start="3">
+<li>Check <strong>Market 8/9</strong> and <strong>Food court 12/12</strong>. The festival gets a 35% deposit when you sign. If you miss the conditions, you return the deposit and lose the payment. Do not sign both MILO and Ichitan.</li>
+</ol>
+<h4>Check or move a stall</h4>
+<ol class="guide-steps" start="4">
+<li>Scroll up to the map. Under <strong>Select a stall</strong>, choose any reserved stall. Read its current plot and <strong>Footfall</strong> percentage. Footfall shows how busy the location is likely to be.</li>
+<li>If you want to move it, choose a plot under <strong>Destination</strong>, then click <strong>Move or swap</strong>. The plot is either <strong>Empty</strong> or shows <strong>Swap with …</strong>. You can also drag the stall onto a plot.</li>
+<li>Watch the plot number change. Food stalls stay on <strong>F</strong> plots and market stalls stay on <strong>M</strong> plots. Dropping on an occupied plot swaps the two stalls. The example works with the default positions.</li>
+<li>Scroll down to the bottom of the stalls page. Click <strong>Lock stalls and sponsors</strong>.</li>
+</ol>
+</article>
+<article class="guide-page" lang="en" data-chapter="6" hidden>
+<p class="guide-kicker">Game step 6   •   Sell tickets</p>
+<h3 tabindex="-1">Price and sell tickets</h3>
+<h4>Fill in the five boxes</h4>
+<ol class="guide-steps" start="1">
+<li>Scroll to <strong>Price and promote tickets</strong>. Type the values shown, then press Tab or click outside each box to update the forecast.</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">Box on screen</th><th scope="col">Type</th></tr></thead><tbody><tr><td>Student (฿)</td><td>180</td></tr><tr><td>Family / school community (฿)</td><td>320</td></tr><tr><td>General public (฿)</td><td>450</td></tr><tr><td>Tickets to release</td><td>3900</td></tr><tr><td>Day-session allocation (%)</td><td>47</td></tr></tbody></table></div>
+<aside class="guide-note">One ticket is for one session. With 3,900 tickets and 47% in the day session, you release 1,833 day tickets and 2,067 evening tickets. The limits are 1,850 day and 2,100 evening. A poor split can leave some tickets unavailable.</aside>
+<h4>Promote the festival and check the rival event</h4>
+<ol class="guide-steps" start="2">
+<li>Click <strong>Run campaign</strong> on three cards: <strong>School newsletter &amp; parent groups</strong>, <strong>Student reels &amp; artist teasers</strong>, and <strong>House and class presale</strong>. Check for a tick on each. This costs THB 57,000 in total and meets the mobile sponsor&#x27;s digital campaign requirement.</li>
+<li>Under <strong>Presale pulse</strong>, click <strong>Run presale check</strong>. Read what competing event is taking place and which group is most affected.</li>
+<li>For the example, find <strong>Keep the plan and protect your cash</strong> and click its <strong>Choose response</strong> button. This costs THB 0. If you choose a paid response, watch how much the forecast changes.</li>
+<li>Read <strong>tickets forecast</strong>, ticket revenue and day/evening demand at the bottom. Our worked example forecasts 3,900 tickets. If your plan is different and your forecast is low, try changing one price or campaign, then check again.</li>
+<li>Click <strong>Open ticket sales</strong>. If it is grey, check that you ran the presale check and clicked a response. You should reach <strong>7 Staff &amp; safety</strong>.</li>
+</ol>
+</article>
+<article class="guide-page" lang="en" data-chapter="7" hidden>
+<p class="guide-kicker">Game step 7   •   Staff &amp; safety</p>
+<h3 tabindex="-1">Staff and safety checks</h3>
+<h4>Type the teacher numbers</h4>
+<ol class="guide-steps" start="1">
+<li>Find the seven fields under <strong>Assign teachers and confirm safety cover</strong>. Each one shows a <strong>min</strong> value. Your total must be <strong>30 or fewer</strong>.</li>
+<li>For this example, type the numbers below. If you made different choices, use at least the minimum shown on your own screen.</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">Field on screen</th><th scope="col">Type</th></tr></thead><tbody><tr><td>Gate scanning &amp; queues</td><td>5</td></tr><tr><td>Main-stage crowd stewards</td><td>7</td></tr><tr><td>Community stage &amp; student check-in</td><td>3</td></tr><tr><td>Food court &amp; handwashing</td><td>3</td></tr><tr><td>Stalls &amp; sponsor team</td><td>3</td></tr><tr><td>Welfare, lost children &amp; access</td><td>3</td></tr><tr><td>Break cover &amp; rapid support</td><td>3</td></tr></tbody></table></div>
+<ol class="guide-steps" start="3">
+<li>Press Tab or click outside the last box. Check <strong>Teachers assigned: 27/30</strong>. Three on break cover makes a later response cheaper.</li>
+</ol>
+<h4>Book services and open</h4>
+<ol class="guide-steps" start="4">
+<li>Click <strong>Book service</strong> on <strong>First-aid team</strong>, <strong>Professional security</strong>, <strong>Touring-grade stage, power &amp; sound</strong>, <strong>Radios and public announcements</strong>, <strong>Free water and hygiene checks</strong>, and <strong>Accessible routes and signage</strong>. Check for a tick on each.</li>
+<li>For the example also book <strong>Covered backup and rain plan</strong> (THB 78,000). It is optional but helps with the storm. All seven services together cost THB 437,000.</li>
+<li>Read the bottom of the page. If there are warnings, fix the listed teacher shortages, unbooked services or negative cash. Keep enough <strong>Working cash</strong> for incidents.</li>
+<li>When you see <strong>Ready to open gates</strong>, click <strong>Open the festival</strong>. Check your plan first. The planning steps lock when the festival begins.</li>
+</ol>
+</article>
+<article class="guide-page" lang="en" data-chapter="8" hidden>
+<p class="guide-kicker">Game step 8   •   Event day</p>
+<h3 tabindex="-1">Deal with four incidents</h3>
+<h4>Make one decision per incident</h4>
+<ol class="guide-steps" start="1">
+<li>Read the <strong>Incident 1 of 4</strong> card and the numbers above it. Look at cost and <strong>tickets at risk</strong> on each option. Lost admissions may cause refunds or cost you a sponsor payment.</li>
+<li>Agree on a choice, then click <strong>Choose response</strong> on that card. The game applies the decision and moves to the next incident. Read <strong>Last incident</strong> to see what happened.</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">Incident</th><th scope="col">Worked example button card</th></tr></thead><tbody><tr><td>1. A wave arrives at Gate 5</td><td>Open a staffed overflow scanning lane. With 5 gate teachers this costs THB 7,000.</td></tr><tr><td>2. The food court hits its lunch peak</td><td>Bring in an approved reserve vendor. The price depends on how short you are of food.</td></tr><tr><td>3. A storm arrives before the evening session</td><td>Use covered backup and cap entry to fit. If you booked the rain plan, this costs THB 12,000 and loses no evening admissions.</td></tr><tr><td>4. A stage or headline act is running late</td><td>Use a rehearsed student set while crew prepares. With 3 on break cover it costs THB 6,500.</td></tr></tbody></table></div>
+<ol class="guide-steps" start="3">
+<li>After each click, check <strong>Working cash</strong>, <strong>Day</strong>, <strong>Evening</strong>, <strong>Guest experience</strong> and <strong>Refunds</strong>. If a choice is greyed out, you cannot afford it. Choose an affordable response. <strong>Call a safe stop</strong> is for when none can be paid for.</li>
+</ol>
+<h4>Make the last food sales decision</h4>
+<ol class="guide-steps" start="4">
+<li>After incident 4, read <strong>Live trading desk</strong>. Compare response cost, forecast meals and school commission. If queues limit sales, consider <strong>Open an express lane</strong>. If you want more buyers, compare <strong>Run a food-and-drink combo</strong>.</li>
+<li>In the worked example, choose <strong>Keep the current setup</strong>. Click <strong>Lock trading decision</strong> on its card. This takes you to <strong>9 Results</strong>.</li>
+</ol>
+</article>
+<article class="guide-page" lang="en" data-chapter="9" hidden>
+<p class="guide-kicker">Game step 9   •   Results</p>
+<h3 tabindex="-1">Results and common problems</h3>
+<h4>Check your score before resetting</h4>
+<ol class="guide-steps" start="1">
+<li>Read <strong>Festival mission achieved</strong> or <strong>Festival mission incomplete</strong>. Check actual admissions and how much is available for charity. Write down guest experience out of 100.</li>
+<li>Read the <strong>Finance report</strong>. Compare ticket revenue after refunds, stall rent, food commission, sponsor income and costs. A <strong>Net surplus / deficit</strong> below zero means the festival lost money. The loan helps with cash while planning. Its fee counts as a cost.</li>
+<li>If you signed sponsors, check <strong>Sponsor audit</strong>. Look at <strong>Total earned</strong>, <strong>Bonus included</strong> and <strong>Deposit returned</strong>. Read the <strong>Incident log</strong> to explain any lost admissions.</li>
+<li>Show or screenshot the results for your teacher before clicking <strong>Run another festival</strong> or <strong>Reset game</strong>.</li>
+</ol>
+<aside class="guide-note">The worked example was tested across all three rival events. It finished with <strong>3,900 admissions</strong>, <strong>98/100 guest experience</strong> and more than <strong>THB 580,000</strong> available for charity. Exact amounts can vary with bids and choices.</aside>
+<h4>If you are stuck</h4>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">What you see</th><th scope="col">What to do</th></tr></thead><tbody><tr><td>Offer accepted, but you cannot move on</td><td>Click Confirm booking. Check that the card says Booked.</td></tr><tr><td>Lock programme is grey</td><td>Fill every slot, remove double bookings and add the choir, auction and two extra shows.</td></tr><tr><td>A stall or sponsor will not fit</td><td>Remove a stall or sponsor in the same area by clicking its ticked button. You can recheck space at the top.</td></tr><tr><td>Open the festival is grey</td><td>Read the warnings at the bottom. Check the minimums, 30-teacher cap, essential services and cash balance.</td></tr><tr><td>You want to edit an earlier choice</td><td>Before opening the festival, click the earlier numbered step. If you change the plan, revisit ticket sales and check staffing again.</td></tr></tbody></table></div>
+<h4>Explain three decisions to your teacher</h4>
+<aside class="guide-note">Which choice helped you sell the most tickets? Which choice protected guests? What would you change on your next run?</aside>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="0" hidden>
+<p class="guide-kicker">每组一台设备、一个游戏标签页，各自筹办一场校园节。</p>
+<h3 tabindex="-1">开始筹办你的校园节</h3>
+<h4>开始前这样做</h4>
+<ol class="guide-steps" start="1">
+<li>你已经在游戏里了。用上方的章节菜单找到下一步。关闭指南后就能继续操作游戏，需要时可以再打开。</li>
+<li>选一人操作游戏，一人核对预算，一人核对节目表。每次选择前先和组员商量。</li>
+<li>在地图下方找到编号按钮，从 <strong>1 International</strong>（主秀艺人）开始。如果浏览器里已有旧存档，而且老师要求从头玩，点击页面上方的 <strong>Reset game</strong>（重置游戏），再确认。这会清除该浏览器中的游戏进度。</li>
+<li>一直使用同一个游戏标签页。进度保存在当前浏览器中。每组用自己的设备打开同一个链接即可。</li>
+</ol>
+<h4>怎样才算完成任务</h4>
+<aside class="guide-note">实际入场人数至少 <strong>3,001 人</strong>，至少有 <strong>100,000 泰铢可用于慈善</strong>，并且校园节安全结束。活动时间为 15:00 至 21:00。</aside>
+<h4>看懂页面上方的数字</h4>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">游戏显示</th><th scope="col">意思</th></tr></thead><tbody><tr><td>Working cash</td><td>还能使用的现金。起始预算为 3,100,000 泰铢。游戏会先扣除场地、卫生和清洁费用 335,000 泰铢，因此一开始可用 2,765,000 泰铢。</td></tr><tr><td>Forecast tickets</td><td>预计售出的票数。开始售票后显示 Tickets sold，活动当天显示 Admissions（实际入场人数）。</td></tr><tr><td>Confirmed artists</td><td>已经确认预订的音乐表演数量。目标是 8 个。</td></tr><tr><td>Teacher team</td><td>已经安排的教师人数，总人数上限为 30。接近开场时才分配。</td></tr></tbody></table></div>
+<h4>现金不够怎么办</h4>
+<ol class="guide-steps" start="5">
+<li>找到当前页面的 <strong>Budget desk</strong>（预算区）。每点击一次 <strong>Borrow THB 250,000 (+THB 5,000 fee)</strong>，就借入 250,000 泰铢，支付 2% 手续费，可用现金净增加 245,000 泰铢。累计最多借 1,000,000 泰铢。</li>
+</ol>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="1" hidden>
+<p class="guide-kicker">游戏第 1 步   •   International</p>
+<h3 tabindex="-1">预订主秀艺人</h3>
+<h4>提交第一次报价</h4>
+<ol class="guide-steps" start="1">
+<li>点击 <strong>1 International</strong>，向下滚过 <strong>Budget desk</strong>，找到艺人卡片。</li>
+<li>看 <strong>Estimated audience appeal</strong>（观众吸引力评分）和 <strong>Guide fee</strong>（参考费用）。评分会影响门票需求。你可以参考费用，然后出价。</li>
+<li>本例选择 <strong>Tilly Birds</strong>。参考费用为 365,000 泰铢。点击 <strong>Offer in baht</strong>（以泰铢报价），输入 <strong>292000</strong>。只输数字，不加逗号。游戏可能已填好这个数。</li>
+<li>在同一张卡片上点击 <strong>Submit bid</strong>（提交报价），看按钮上方的回复。</li>
+</ol>
+<h4>看懂回复并确认预订</h4>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">游戏回复</th><th scope="col">下一步</th></tr></thead><tbody><tr><td>Agent declined. Counteroffer …</td><td>经纪人拒绝了报价。用对方提出的金额替换原来的报价，再点击 Submit bid。例如，对方要求 378,000 泰铢，就输入 378000。</td></tr><tr><td>Offer accepted</td><td>报价已接受。还要在同一张卡片上点击 Confirm booking，才算预订成功。</td></tr><tr><td>Booked</td><td>预订成功。检查显示的成交价，并确认页面上方的艺人数已变为 1。</td></tr></tbody></table></div>
+<ol class="guide-steps" start="5">
+<li>滚到艺人列表底部，点击 <strong>Next · Local acts</strong>。如果按钮是灰色，回到主秀艺人的卡片，看是否还需要点击 <strong>Confirm booking</strong>。</li>
+</ol>
+<h4>继续花钱前先检查</h4>
+<aside class="guide-note">只能预订 <strong>1 个主秀节目</strong>。来自海外的主秀艺人还需 55,000 泰铢的交通费。已确认后再点击 <strong>Cancel (20% fee)</strong> 取消，需要支付成交价的 20%。</aside>
+<aside class="guide-note">Stray Kids 的游戏吸引力评分为 50,000，票价合适时门票可能很快售罄。他们的参考费用是 2,400,000 泰铢。第一次可跟着示例选 Tilly Birds，之后再比较昂贵主秀的风险。</aside>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="2" hidden>
+<p class="guide-kicker">游戏第 2、3 步   •   Local artists 和 School bands</p>
+<h3 tabindex="-1">添加七个助演节目</h3>
+<h4>预订一个本地音乐节目</h4>
+<ol class="guide-steps" start="1">
+<li>在 <strong>2 Local artists</strong>（本地艺人）中找到 <strong>GOODMOOD</strong>。在 <strong>Offer in baht</strong> 输入 <strong>76000</strong>，再点击 <strong>Submit bid</strong>。</li>
+<li>如果被拒绝，输入对方提出的金额，再点击 <strong>Submit bid</strong>。接受后点击 <strong>Confirm booking</strong>。检查是否出现 <strong>Booked</strong> 和 <strong>1/7 support acts</strong>。</li>
+<li>滚到页面底部，点击 <strong>Next · School bands</strong>。</li>
+</ol>
+<h4>预订六支校园乐队</h4>
+<ol class="guide-steps" start="4">
+<li>找到下表中的六张卡片，分别点击 <strong>Book for THB …</strong>。即使费用为 0 泰铢，也必须点击按钮。校园乐队不用报价。</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">校园乐队卡片</th><th scope="col">费用</th></tr></thead><tbody><tr><td>Neon Tigers</td><td>0 泰铢</td></tr><tr><td>After School Static</td><td>4,000 泰铢</td></tr><tr><td>Tiger Tape</td><td>5,000 泰铢</td></tr><tr><td>Riverline</td><td>0 泰铢</td></tr><tr><td>Northside Noise</td><td>7,000 泰铢</td></tr><tr><td>Velvet Voltage</td><td>8,000 泰铢</td></tr></tbody></table></div>
+<ol class="guide-steps" start="5">
+<li>检查预订状态，应显示 <strong>1/1 headliner</strong>（主秀）和 <strong>7/7 support acts</strong>（助演）。上方的 <strong>Confirmed artists</strong> 应为 <strong>8</strong>。</li>
+<li>滚到页面底部，点击 <strong>Lock eight-act line-up</strong>（确认八个音乐节目）。接下来会进入 <strong>4 Schedule</strong>。</li>
+</ol>
+<aside class="guide-note">本地艺人和校园乐队共用七个助演名额。你也可以跳过本地艺人，直接点击 <strong>Next · School bands</strong>，预订七支校园乐队。使用下一页的节目表时，换成你自己预订的名字。</aside>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="3" hidden>
+<p class="guide-kicker">游戏第 4 步   •   Schedule</p>
+<h3 tabindex="-1">填满十二个演出时段</h3>
+<h4>每个格子放一个节目</h4>
+<ol class="guide-steps" start="1">
+<li>先看 <strong>Plan the two-stage programme</strong>（安排两个舞台的节目）上方的节目表，再滚到下面的节目卡片。</li>
+<li>找到 <strong>GOODMOOD</strong>，点击卡片上的 <strong>Unscheduled</strong>（未安排）下拉菜单，选择 <strong>15:00–16:00 · main</strong>。节目表会自动更新。</li>
+<li>按下表逐一安排每个节目。点击前确认时间和舞台。相同时间的 <strong>main</strong>（主舞台）和 <strong>community</strong>（社区舞台）是两个不同的格子。</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">时间</th><th scope="col">主舞台 · main</th><th scope="col">社区舞台 · community</th></tr></thead><tbody><tr><td>15:00–16:00</td><td>GOODMOOD</td><td>Neon Tigers</td></tr><tr><td>16:00–17:00</td><td>After School Static</td><td>Charity auction</td></tr><tr><td>17:00–18:00</td><td>Tiger Tape</td><td>Primary choir</td></tr><tr><td>18:00–19:00</td><td>Student magic and illusion show</td><td>Riverline</td></tr><tr><td>19:00–20:00</td><td>Northside Noise</td><td>Student dance crews</td></tr><tr><td>20:00–21:00</td><td>Tilly Birds</td><td>Velvet Voltage</td></tr></tbody></table></div>
+<h4>核对完再确认</h4>
+<ol class="guide-steps" start="4">
+<li>再看一次节目表，每个格子应只有一个名字。<strong>Available</strong> 表示空着。两个名字之间有斜线，说明两个节目占了同一格。</li>
+<li>如果有冲突，回到其中一张卡片，改选正确的时段。选择 <strong>Unscheduled</strong> 可以把节目从时间表中移除。没用到的卡片都选 <strong>Unscheduled</strong>。</li>
+<li>确认两个舞台都有音乐节目，共 <strong>8 个音乐节目</strong>，另有 <strong>Primary choir</strong>（小学合唱）、<strong>Charity auction</strong>（慈善拍卖）和两个自选节目。主秀须在 18:00 后的主舞台演出。点击 <strong>Lock programme</strong>（确认节目表）。</li>
+</ol>
+<aside class="guide-note">在本例中，慈善拍卖必须排在社区舞台，学生魔术必须排在主舞台。每张卡片的下拉菜单只会显示该节目可选的舞台。</aside>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="4" hidden>
+<p class="guide-kicker">游戏第 5 步   •   Stalls &amp; sponsors</p>
+<h3 tabindex="-1">预订摊位并设定餐饮价格</h3>
+<h4>安排美食区</h4>
+<ol class="guide-steps" start="1">
+<li>在 <strong>Build the market and food court</strong>（布置市集和美食区）下方，找到下表的八个餐饮摊位。每个摊位点击一次 <strong>Reserve spaces</strong>（预留摊位）。有勾表示已选，再点一次可取消。</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">餐饮摊位卡片</th><th scope="col">占用格数</th></tr></thead><tbody><tr><td>Halal chicken biryani &amp; beef satay</td><td>2</td></tr><tr><td>Tofu pad kra pao &amp; vegetable spring rolls</td><td>2</td></tr><tr><td>Mango sticky rice &amp; coconut ice cream</td><td>2</td></tr><tr><td>Pad kra pao chicken with fried egg</td><td>1</td></tr><tr><td>Boat noodles with beef &amp; morning glory</td><td>2</td></tr><tr><td>Thai milk tea &amp; brown-sugar boba</td><td>1</td></tr><tr><td>Watermelon slush &amp; pineapple cups</td><td>1</td></tr><tr><td>Banana roti with condensed milk</td><td>1</td></tr></tbody></table></div>
+<ol class="guide-steps" start="2">
+<li>确认页面显示 <strong>Food court 12/12 booth spaces</strong>。本例每场基础供应量为 1,675 份，位置和人员安排还会影响实际供应量。摊位卡片上的租金是校园节获得的收入。</li>
+</ol>
+<h4>添加两个市集摊位</h4>
+<ol class="guide-steps" start="3">
+<li>在 <strong>Student-designed tote bags &amp; enamel pins</strong>（学生设计的帆布袋和徽章，占 2 格）及 <strong>Basketball shootout</strong>（投篮挑战，占 1 格）上点击 <strong>Reserve spaces</strong>。签赞助前，市集应显示 <strong>3/9</strong>。</li>
+<li>在 <strong>Food pricing</strong>（餐饮定价）下点击 <strong>Choose regular prices</strong>（选普通价格）。平均每份 110 泰铢，学校获得餐饮销售额的 15%。<strong>Value menu</strong>（实惠菜单）可能增加顾客，但需要补贴。<strong>Premium prices</strong>（高价）可能减少需求。</li>
+</ol>
+<aside class="guide-note">美食区和市集各有上限：<strong>美食区 12 格</strong>，<strong>市集 9 格</strong>。地图上一个图标也可能占用多格容量。赞助商摊位同样会占用容量。</aside>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="5" hidden>
+<p class="guide-kicker">游戏第 5 步（续）   •   Stalls &amp; sponsors</p>
+<h3 tabindex="-1">签赞助合同并检查地图</h3>
+<h4>签三份赞助合同</h4>
+<ol class="guide-steps" start="1">
+<li>滚到 <strong>Sponsor contracts</strong>（赞助合同）。仔细读每张卡片的要求。<strong>Offer available</strong> 表示可以签约；<strong>Offer locked</strong> 表示还没达到要求。</li>
+<li>按下表找到三个赞助商，分别点击 <strong>Sign contract</strong>。按示例完成节目表后，这三个赞助都会开放。</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">赞助商卡片</th><th scope="col">检查条件</th></tr></thead><tbody><tr><td>Community bank sponsor</td><td>已经安排慈善拍卖。需 2,200 人实际入场，占市集 1 格。</td></tr><tr><td>MILO chocolate drinks booth</td><td>需 2,200 人实际入场，市集至少安排 3 位教师。占市集 2 格。</td></tr><tr><td>Mobile network sponsor</td><td>需 3,100 人实际入场，还要做线上宣传。占市集 2 格。第 6 步选择 Student reels &amp; artist teasers。</td></tr></tbody></table></div>
+<ol class="guide-steps" start="3">
+<li>检查 <strong>Market 8/9</strong> 和 <strong>Food court 12/12</strong>。签约时校园节先收到 35% 的预付款。如果最后没达到合同条件，须退回预付款，不能获得赞助收入。MILO 和 Ichitan 不能同时签。</li>
+</ol>
+<h4>检查摊位，也可以移动</h4>
+<ol class="guide-steps" start="4">
+<li>向上滚到地图。在 <strong>Select a stall</strong>（选择摊位）中选择一个已预订的摊位。查看当前格号及 <strong>Footfall</strong> 百分比。这个百分比表示该位置预计有多热闹。</li>
+<li>要移动时，在 <strong>Destination</strong>（目的位置）中选择格号，然后点击 <strong>Move or swap</strong>（移动或交换）。<strong>Empty</strong> 是空位，<strong>Swap with …</strong> 表示要与另一个摊位交换。也可以直接拖动图标。</li>
+<li>检查格号有没有变。美食摊留在 <strong>F</strong> 区，市集摊留在 <strong>M</strong> 区。拖到有摊位的格子会交换两者。按本例玩，可以保留默认位置。</li>
+<li>滚到摊位页面底部，点击 <strong>Lock stalls and sponsors</strong>（确认摊位和赞助商）。</li>
+</ol>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="6" hidden>
+<p class="guide-kicker">游戏第 6 步   •   Sell tickets</p>
+<h3 tabindex="-1">设置票价并开始售票</h3>
+<h4>填写五个输入框</h4>
+<ol class="guide-steps" start="1">
+<li>找到 <strong>Price and promote tickets</strong>（票价和宣传）。按表输入数字。填完每格后按 Tab 或点击框外，让预测更新。</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">游戏中的输入框</th><th scope="col">输入</th></tr></thead><tbody><tr><td>Student (฿)</td><td>180</td></tr><tr><td>Family / school community (฿)</td><td>320</td></tr><tr><td>General public (฿)</td><td>450</td></tr><tr><td>Tickets to release</td><td>3900</td></tr><tr><td>Day-session allocation (%)</td><td>47</td></tr></tbody></table></div>
+<aside class="guide-note">一张票只能进入一场。放出 3,900 张票、日场分配 47% 时，日场有 1,833 张，晚场有 2,067 张。日场上限 1,850，晚场 2,100。如果比例不合适，有些票就无法放出。</aside>
+<h4>做宣传并查看竞争活动</h4>
+<ol class="guide-steps" start="2">
+<li>在三张卡片上点击 <strong>Run campaign</strong>：<strong>School newsletter &amp; parent groups</strong>、<strong>Student reels &amp; artist teasers</strong>、<strong>House and class presale</strong>。检查三个按钮都有勾。总费用为 57,000 泰铢，也符合通信赞助商的线上宣传要求。</li>
+<li>在 <strong>Presale pulse</strong> 下点击 <strong>Run presale check</strong>（检查预售情况）。看是哪一场活动在竞争，以及哪个观众群体受影响最大。</li>
+<li>按本例，找到 <strong>Keep the plan and protect your cash</strong>（维持计划、保留现金），点击该卡片的 <strong>Choose response</strong>。这项费用为 0 泰铢。若选择付费方案，观察预测有什么变化。</li>
+<li>看页面下方的 <strong>tickets forecast</strong>（预计售票数）、票务收入以及日场和晚场的需求。本例预计售出 3,900 张。如果你用的是其他方案且预计销量低，可以只改一项票价或宣传，再比较结果。</li>
+<li>点击 <strong>Open ticket sales</strong>（开始售票）。如果是灰色，确认已经检查预售并选了应对方案。接下来进入 <strong>7 Staff &amp; safety</strong>。</li>
+</ol>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="7" hidden>
+<p class="guide-kicker">游戏第 7 步   •   Staff &amp; safety</p>
+<h3 tabindex="-1">分配教师并预订安全服务</h3>
+<h4>输入各岗位人数</h4>
+<ol class="guide-steps" start="1">
+<li>在 <strong>Assign teachers and confirm safety cover</strong> 下找到七个输入框。每个岗位显示 <strong>min</strong>（最低人数）。教师总数最多 <strong>30 人</strong>。</li>
+<li>按本例填写下表。如果你改了其他选择，各岗位人数至少要达到你自己屏幕上显示的最低要求。</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">游戏中的岗位</th><th scope="col">输入</th></tr></thead><tbody><tr><td>Gate scanning &amp; queues</td><td>5</td></tr><tr><td>Main-stage crowd stewards</td><td>7</td></tr><tr><td>Community stage &amp; student check-in</td><td>3</td></tr><tr><td>Food court &amp; handwashing</td><td>3</td></tr><tr><td>Stalls &amp; sponsor team</td><td>3</td></tr><tr><td>Welfare, lost children &amp; access</td><td>3</td></tr><tr><td>Break cover &amp; rapid support</td><td>3</td></tr></tbody></table></div>
+<ol class="guide-steps" start="3">
+<li>填完最后一格后按 Tab 或点击框外，确认显示 <strong>Teachers assigned: 27/30</strong>。安排 3 人负责轮休替岗，可以降低后续某项应对的成本。</li>
+</ol>
+<h4>预订服务并开场</h4>
+<ol class="guide-steps" start="4">
+<li>在以下六张卡片上点击 <strong>Book service</strong>，确认每张都有勾：<strong>First-aid team</strong>、<strong>Professional security</strong>、<strong>Touring-grade stage, power &amp; sound</strong>、<strong>Radios and public announcements</strong>、<strong>Free water and hygiene checks</strong>、<strong>Accessible routes and signage</strong>。</li>
+<li>本例还要预订 <strong>Covered backup and rain plan</strong>（有遮盖的备用场地和雨天方案），费用为 78,000 泰铢。它是可选项，但能帮助应对暴雨。七项服务共 437,000 泰铢。</li>
+<li>先看页面底部的提示。如果有警告，按提示补足教师、预订缺少的服务，或处理现金不足。保留一部分 <strong>Working cash</strong>，用于应对突发状况。</li>
+<li>看到 <strong>Ready to open gates</strong> 后，点击 <strong>Open the festival</strong>（开场）。点击前检查计划，因为开场后不能再改前面的筹办步骤。</li>
+</ol>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="8" hidden>
+<p class="guide-kicker">游戏第 8 步   •   Event day</p>
+<h3 tabindex="-1">处理四个突发状况</h3>
+<h4>每个状况选一个应对方案</h4>
+<ol class="guide-steps" start="1">
+<li>看 <strong>Incident 1 of 4</strong>（第 1 个状况，共 4 个）卡片和上方数据。比较方案的费用，以及 <strong>tickets at risk</strong>（可能失去的入场人数）。入场人数下降可能产生退款，也可能影响赞助收入。</li>
+<li>全组同意后，在选中的卡片上点击 <strong>Choose response</strong>。游戏会执行并进入下一个状况。看 <strong>Last incident</strong>，了解上一次选择造成的结果。</li>
+</ol>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">状况</th><th scope="col">示例选择的卡片</th></tr></thead><tbody><tr><td>1. 许多观众同时到达 5 号门</td><td>Open a staffed overflow scanning lane。增开一条有人值守的验票通道。若入口安排了 5 位教师，费用为 7,000 泰铢。</td></tr><tr><td>2. 美食区迎来用餐高峰</td><td>Bring in an approved reserve vendor。请符合要求的备用摊主增加供应，费用取决于缺少多少份。</td></tr><tr><td>3. 晚场开始前下暴雨</td><td>Use covered backup and cap entry to fit。使用有遮盖的备用场地。若已预订雨天方案，此时支付 12,000 泰铢，晚场入场人数不减少。</td></tr><tr><td>4. 主秀或晚场节目延误</td><td>Use a rehearsed student set while crew prepares。先安排排练好的学生节目。若有 3 人负责替岗，费用为 6,500 泰铢。</td></tr></tbody></table></div>
+<ol class="guide-steps" start="3">
+<li>每次选择后，查看 <strong>Working cash</strong>（可用现金）、<strong>Day</strong>（日场）、<strong>Evening</strong>（晚场）、<strong>Guest experience</strong>（观众体验）和 <strong>Refunds</strong>（退款）。灰色选项表示付不起。若所有方案都付不起，选择 <strong>Call a safe stop</strong>（安全停办）。</li>
+</ol>
+<h4>决定最后的餐饮销售策略</h4>
+<ol class="guide-steps" start="4">
+<li>第 4 个状况结束后，会看到 <strong>Live trading desk</strong>。比较各方案的费用、预计售出份数和学校分成。如果排队影响销量，可以考虑 <strong>Open an express lane</strong>（开快速通道）。想吸引更多买家，可比较 <strong>Run a food-and-drink combo</strong>（餐饮套餐）。</li>
+<li>按本例选 <strong>Keep the current setup</strong>（维持原有安排）。在对应卡片上点击 <strong>Lock trading decision</strong>，进入 <strong>9 Results</strong>。</li>
+</ol>
+</article>
+<article class="guide-page" lang="zh-CN" data-chapter="9" hidden>
+<p class="guide-kicker">游戏第 9 步   •   Results</p>
+<h3 tabindex="-1">查看结果并解决常见问题</h3>
+<h4>重置前先记录成绩</h4>
+<ol class="guide-steps" start="1">
+<li>看页面显示 <strong>Festival mission achieved</strong>（完成任务）还是 <strong>Festival mission incomplete</strong>（未完成任务）。记录实际入场人数、可用于慈善的金额，以及满分 100 的观众体验分。</li>
+<li>看 <strong>Finance report</strong>（财务报告）。比较扣除退款后的票务收入、摊位租金、餐饮分成、赞助和费用。<strong>Net surplus / deficit</strong>（净盈余或亏损）小于零表示校园节亏损。借款可增加筹办时的现金，借款手续费计入成本。</li>
+<li>如果签过赞助合同，查看 <strong>Sponsor audit</strong>。确认 <strong>Total earned</strong>（实际获得）、<strong>Bonus included</strong>（其中的奖金）以及 <strong>Deposit returned</strong>（退回的预付款）。用 <strong>Incident log</strong>（突发状况记录）说明为什么有人没入场。</li>
+<li>先把结果展示给老师或截图，再点击 <strong>Run another festival</strong> 或 <strong>Reset game</strong> 开始新的一局。</li>
+</ol>
+<aside class="guide-note">这个示例用三种竞争活动分别测试过。结果均为 <strong>3,900 人入场</strong>、<strong>98/100 观众体验分</strong>，并有 <strong>超过 580,000 泰铢可用于慈善</strong>。具体金额随报价和选择而变。</aside>
+<h4>卡住了怎么办</h4>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">你看到的情况</th><th scope="col">怎么处理</th></tr></thead><tbody><tr><td>报价被接受，但不能继续</td><td>点击 Confirm booking，确认卡片显示 Booked。</td></tr><tr><td>Lock programme 是灰色</td><td>填满所有格子，解决时间冲突，并加上合唱、拍卖和两个自选节目。</td></tr><tr><td>摊位或赞助商放不下</td><td>点击同一区域里已打勾的按钮，取消一个摊位或赞助商。在页面上方重新确认容量。</td></tr><tr><td>Open the festival 是灰色</td><td>读下方警告。核对岗位最低人数、教师总数上限 30、必需服务和现金。</td></tr><tr><td>想改前面的选择</td><td>开场前点击相应的编号步骤。修改计划后，重新确认售票和人员安排。</td></tr></tbody></table></div>
+<h4>向老师说明三个决定</h4>
+<aside class="guide-note">哪个选择帮助你卖出最多门票？哪个选择保护了观众？如果再玩一次，你会改什么？</aside>
+</article>
+   <details id="guide-references">
+    <summary id="guide-references-label">Teacher notes and sources</summary>
+    <div lang="en"><p>Allow roughly 5 min to start, 12 min for bids, 13 min for scheduling, 13 min for stalls and sponsorship, 11 min for ticketing, 13 min for staffing, 15 min for live decisions and 8 min for debrief. Ask teams to defend one safety decision and explain which expense or sponsor made the biggest difference.</p><p>Real artist names and releases are used as classroom examples. Bids, availability, sponsors, costs, capacities and audience figures are fictional. The attendance goal measures total entries across two sessions, while operating limits apply at any one time.</p><ul><li><a href="https://sites.google.com/sisbschool.com/sisbfest/home">SISB Fest home</a>, <a href="https://sites.google.com/sisbschool.com/sisbfest/about-sisb-fest/2025">2025 event and map</a>, <a href="https://sites.google.com/sisbschool.com/sisbfest/location">campus access at Gate 5</a></li>
 <li><a href="https://www.hse.gov.uk/event-safety/crowd-management-assess.htm">Crowd risk and safe capacity</a>, <a href="https://www.hse.gov.uk/event-safety/incidents-and-emergencies.htm">incident and emergency planning</a>, <a href="https://www.food.gov.uk/safety-hygiene/providing-food-at-community-and-charity-events">food hygiene and allergens at community events</a>. These are design references for the simulator.</li>
-<li><a href="https://www.tillybirds.com/discography">Tilly Birds</a>, <a href="https://music.apple.com/us/album/my-chainz-single/1894976005">4EVE</a>, <a href="https://www.starship-ent.com/newrelease">IVE and CRAVITY</a>, <a href="https://straykids.jype.com/Mobile/DiscographyView?AamSeq=280">Stray Kids</a></li><li><a href="https://www.ichitangroup.com/en/products-and-brands">Ichitan product portfolio</a>, <a href="https://www.investor.afteryoudessertcafe.com/en/home">After You</a>, <a href="https://shoponline.taokaenoi.co.th/index.php?controller=category&amp;id_category=22&amp;id_lang=1">Tao Kae Noi</a>, <a href="https://www.ais.th/about-us/pr-news/zeed-5g-esport">AIS esports</a> and <a href="https://news.xbox.com/en-us/2024/11/06/planet-coaster-2-tips/">Frontier’s Planet Coaster 2 guest-flow and retail guidance</a>. Sponsor deals and offers in the game are fictional.</li></ul></dialog>
+<li><a href="https://www.tillybirds.com/discography">Tilly Birds</a>, <a href="https://music.apple.com/us/album/my-chainz-single/1894976005">4EVE</a>, <a href="https://www.starship-ent.com/newrelease">IVE and CRAVITY</a>, <a href="https://straykids.jype.com/Mobile/DiscographyView?AamSeq=280">Stray Kids</a></li><li><a href="https://www.ichitangroup.com/en/products-and-brands">Ichitan product portfolio</a>, <a href="https://www.investor.afteryoudessertcafe.com/en/home">After You</a>, <a href="https://shoponline.taokaenoi.co.th/index.php?controller=category&amp;id_category=22&amp;id_lang=1">Tao Kae Noi</a>, <a href="https://www.ais.th/about-us/pr-news/zeed-5g-esport">AIS esports</a> and <a href="https://news.xbox.com/en-us/2024/11/06/planet-coaster-2-tips/">Frontier’s Planet Coaster 2 guest-flow and retail guidance</a>. Sponsor deals and offers in the game are fictional.</li></ul></div>
+   </details>
+  </div>
+  <nav class="guide-footer" aria-label="Guide navigation" id="guide-navigation">
+   <button id="guide-previous" type="button">Previous</button>
+   <span id="guide-progress" aria-live="polite"></span>
+   <button id="guide-next" type="button">Next</button>
+  </nav>
+ </div>
+</dialog>
 <script>
 'use strict';
 const MAP_URL='https://sites.google.com/sitesv-images-rt/APXyLQe9dlAZgF9S8Ub3bVYxvskgKxeJrLRWj5e8FEC3s3Ie70KLZNBTyKdVfD9ZEzhySNSxPLwFDpLgZ5BNWTcMXQ-hbKabw4QrK0yyCkree7aHBszjH2Gre4U-baSUWFNrVRkDv00iGL9IORNMyTt-emsVtvkfm2YUnjAhGkrxPhwb7ISh-VTE1vZ_niEDreg-jR2-L70Dyqgl3suF7ckjuwLAyNypFRqAm0wC1o_B=w1280';
@@ -701,7 +1138,7 @@ function render(){
  const tab=['headline','local','school'][index];
  const current=phase===s.phase&&(phase!==0||tab===(s.bookingTab||'headline'));
  return '<button data-nav="'+index+'" class="'+(current?'on':'')+'" '+(s.phase>=5?'disabled':'')+'><b>'+(index+1)+'</b>'+title+'</button>';
-}).join('')+'</nav><section id="build-drawer" class="panel">'+(s.phase>0&&s.phase<5?cashLine():'')+screens[s.phase]()+'</section></div>';
+}).join('')+'</nav><section id="build-drawer" class="panel"><div class="step-guide"><button type="button" data-ui="help" data-guide-step aria-haspopup="dialog">Guide for this step</button></div>'+(s.phase>0&&s.phase<5?cashLine():'')+screens[s.phase]()+'</section></div>';
  mapShell();
  paintCardArt();
 }
@@ -814,7 +1251,8 @@ document.addEventListener('click',e=>{
  if(s.phase<=3)s.tickets=null;
  refresh();return;
  }
- if(d.ui==='map'||d.ui==='help'){byId(d.ui).showModal();return;}
+ if(d.ui==='map'){byId('map').showModal();return;}
+ if(d.ui==='help'){openGuide(b.hasAttribute('data-guide-step'));return;}
  if(d.ui==='reset'){byId('reset-dialog').showModal();return;}
  if(d.ui==='reset-confirm'){
   byId('reset-dialog').close();
@@ -1162,6 +1600,62 @@ function drawWorld(){
  }
  text('SISB CAMPUS · BUILDINGS COMPRESSED / BOOTH AREAS ENLARGED',.5,.98,9,'#365a4c');
 }
+
+const guideText={
+ en:{title:'How to play',close:'Back to game',jump:'Jump to a chapter',previous:'Previous',next:'Next',nav:'Guide navigation',references:'Teacher notes and sources'},
+ 'zh-CN':{title:'游戏指南',close:'返回游戏',jump:'跳至章节',previous:'上一章',next:'下一章',nav:'指南章节导航',references:'教师说明与资料来源（英文）'}
+};
+const guideDialog=byId('help');
+const guideLanguage=byId('guide-language');
+const guideChapter=byId('guide-chapter');
+const guidePages=[...guideDialog.querySelectorAll('.guide-page')];
+let currentGuideChapter=0;
+try{
+ const language=localStorage.getItem('sisb-fest-guide-language');
+ if(Object.hasOwn(guideText,language))guideLanguage.value=language;
+}catch{}
+function showGuideChapter(index,focusHeading=false){
+ const language=guideLanguage.value;
+ const labels=guideText[language];
+ const chapters=guidePages.filter(page=>page.lang===language);
+ currentGuideChapter=Math.max(0,Math.min(index,chapters.length-1));
+ for(const page of guidePages)page.hidden=page!==chapters[currentGuideChapter];
+ guideChapter.replaceChildren(...chapters.map((page,i)=>new Option((i+1)+'. '+page.querySelector('h3').textContent,i)));
+ guideChapter.value=String(currentGuideChapter);
+ guideDialog.lang=language;
+ byId('guide-title').textContent=labels.title;
+ byId('guide-close').textContent=labels.close;
+ byId('guide-chapter-label').textContent=labels.jump;
+ byId('guide-references-label').textContent=labels.references;
+ byId('guide-references').hidden=currentGuideChapter!==0;
+ byId('guide-navigation').setAttribute('aria-label',labels.nav);
+ const previous=byId('guide-previous'),next=byId('guide-next');
+ previous.textContent=labels.previous;
+ next.textContent=labels.next;
+ previous.disabled=currentGuideChapter===0;
+ next.disabled=currentGuideChapter===chapters.length-1;
+ byId('guide-progress').textContent=(currentGuideChapter+1)+' / '+chapters.length;
+ byId('guide-content').scrollTop=0;
+ if(focusHeading)chapters[currentGuideChapter].querySelector('h3').focus({preventScroll:true});
+}
+function openGuide(forCurrentStep){
+ let index=0;
+ if(forCurrentStep){
+  if(s.phase===0)index=!s.bookingTab||s.bookingTab==='headline'?1:2;
+  else index=[0,3,4,6,7,8,9][s.phase];
+ }
+ showGuideChapter(index);
+ guideDialog.showModal();
+ byId('guide-content').scrollTop=0;
+}
+guideLanguage.addEventListener('change',()=>{
+ try{localStorage.setItem('sisb-fest-guide-language',guideLanguage.value);}catch{}
+ showGuideChapter(currentGuideChapter);
+});
+guideChapter.addEventListener('change',()=>showGuideChapter(Number(guideChapter.value)));
+byId('guide-previous').addEventListener('click',()=>showGuideChapter(currentGuideChapter-1,true));
+byId('guide-next').addEventListener('click',()=>showGuideChapter(currentGuideChapter+1,true));
+
 
 render();
 </script>
