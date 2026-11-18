@@ -261,6 +261,16 @@ button.selected:hover:not(:disabled){background:#c6f3ca!important;color:#254634!
 button:active:not(:disabled){transform:translateY(2px)}
 button:focus-visible{outline:3px solid #7144a4;outline-offset:3px}
 </style>
+<style>
+[data-phase="0"] .card .bid-label{color:#fff4e9;font-size:1rem;font-weight:800}
+.bid-label input[data-bid]{display:block;margin-top:6px;background:#fff9ee;color:#2c2040;border-color:#bca6d0}
+#festival-canvas{touch-action:pan-y}
+#plot-panel:not(:empty){position:static;width:auto;margin:12px 16px;padding:12px 16px;box-shadow:none}
+.plot-controls{display:flex;align-items:end;gap:10px;flex-wrap:wrap}
+.plot-controls label{flex:1 1 220px}
+.plot-controls select,.world-stall-picker select{width:100%;min-width:0;background:#fffdf5;color:#234c43;border-color:#758d80}
+.world-stall-picker{flex:1 1 100%;max-width:34rem}
+</style>
 </head>
 <body>
 <header class="mast"><div class="shell"><div class="wordmark"><span class="mark" aria-hidden="true"></span><h1>SISB Fest Stratagem</h1></div><div class="tools"><button data-ui="map">Campus map</button><button data-ui="help">How to play</button><button data-ui="reset">Restart</button></div></div></header>
@@ -502,7 +512,7 @@ function booking(){
  ].filter(([group])=>group===selectedGroup).map(([group,title,desc])=>'<details open><summary><h3 style="display:inline">'+title+'</h3></summary><p>'+desc+'</p>'+(group==='school'?'<p><a href="https://sites.google.com/sisbschool.com/sisbfest/charity" target="_blank" rel="noopener">Watch the official SISB Fest video</a> · <a href="https://sisb.ac.th/hitting-the-high-notes-hydroxide-band-shines-at-sisb-fest-2025/" target="_blank" rel="noopener">Meet Hydroxide Band</a></p>':'')+'<div class="grid">'+acts.filter(a=>a[6]===group).map(a=>{
  const [key,name,bio,fee,draw]=a,o=s.offers[key],booked=isBooked(key),bid=s.bids[key]??Math.round(fee*.8/1000)*1000;
  const status=booked?'Booked · '+money(s.booked[key]):o?.accepted?'Offer accepted · '+money(o.bid):o?'Agent declined. Counteroffer '+money(o.counter)+' · Round '+o.attempts:'';
- return card(name,bio+'<br>Estimated audience appeal '+draw+' · Guide fee '+money(fee),'<p>'+status+'</p>'+(booked?'<button data-release="'+key+'">Cancel (20% fee)</button>':group==='school'?'<button data-schoolbook="'+key+'">Book for '+money(fee)+'</button>':'<label>Offer in baht<input type="number" min="1000" step="1000" value="'+bid+'" data-bid="'+key+'"></label>'+(o?.accepted?'<button data-book="'+key+'">Confirm booking</button>':'<button data-offer="'+key+'">Submit bid</button>')));
+ return card(name,bio+'<br>Estimated audience appeal '+draw+' · Guide fee '+money(fee),'<p>'+status+'</p>'+(booked?'<button data-release="'+key+'">Cancel (20% fee)</button>':group==='school'?'<button data-schoolbook="'+key+'">Book for '+money(fee)+'</button>':'<label class="bid-label">Offer in baht<input type="number" min="1000" step="1000" value="'+bid+'" data-bid="'+key+'"></label>'+(o?.accepted?'<button data-book="'+key+'">Confirm booking</button>':'<button data-offer="'+key+'">Submit bid</button>')));
  }).join('')+'</div></details>').join('')+'<p class="muted">Research: <a href="https://newsroom.spotify.com/2026-05-05/radar-asia-artists-2026/" target="_blank">Spotify RADAR 2026</a> · <a href="https://www.believe.com/article/label-focus-smallroom/" target="_blank">Smallroom emerging roster, 2026</a>. Audience appeal is a game value, not TikTok followers.</p>'+phaseNav(selectedGroup==='headline'?'Next · Local acts':selectedGroup==='local'?'Next · School bands':'Lock eight-act line-up',selectedGroup==='headline'?!head:selectedGroup==='school'&&!bookingComplete());
 }
 function programme(){
@@ -661,6 +671,7 @@ const screens=[booking,programme,vendor,selling,staffing,eventDay,results];
 const app=byId('app');
 function render(){
  cancelAnimationFrame(mapFrame);
+ syncMapPlots();
  const forecast=s.tickets||estimateTickets();
  const actual=s.live?s.live.day+s.live.night:forecast.count;
  app.dataset.phase=s.phase;
@@ -705,7 +716,7 @@ function paintCardArt(){
   }
  });
 }
-function refresh(up=false){s.placements=s.placements||{};save();render();if(up)byId('build-drawer').scrollIntoView({block:'start',behavior:'instant'})}
+function refresh(up=false){render();save();if(up)byId('build-drawer').scrollIntoView({block:'start',behavior:'instant'})}
 function next(){
  if(s.phase===0){
  const tab=s.bookingTab||'headline';
@@ -798,7 +809,22 @@ document.addEventListener('click',e=>{
   s.phase=6;
   refresh(true);return;
  }
- else if(d.toggle){const [collection,key]=d.toggle.split(':');s[collection][key]=!checked(collection,key);}
+ else if(d.toggle){
+  const [collection,key]=d.toggle.split(':');
+  const removing=checked(collection,key);
+  const booth=collection==='stalls'?stalls[key]:collection==='sponsors'?sponsors[key]:null;
+  if(booth&&!removing){
+   const [zone,spaces]=collection==='stalls'?[booth[5],booth[1]]:[booth[4],booth[2]];
+   if(used(zone)+spaces>zoneCaps[zone]){
+    const card=b.closest('.card');
+    let warning=card.querySelector('.booth-warning');
+    if(!warning){warning=document.createElement('p');warning.className='warn booth-warning';warning.setAttribute('role','status');b.after(warning);}
+    warning.textContent='Free up '+(used(zone)+spaces-zoneCaps[zone])+' '+(zone==='food'?'food court':'market')+' spaces to reserve this booth.';
+    return;
+   }
+  }
+  s[collection][key]=!removing;
+ }
  else if(d.offer){
   const a=plannedArtist(d.offer), old=s.offers[d.offer], attempt=(old?.attempts||0)+1;
   if(old?.accepted)return;
@@ -828,84 +854,169 @@ document.addEventListener('click',e=>{
  refresh();
 });
 // The map is a simulation layout. Coordinates are normalised for tablet and desktop.
-const mapPositions = {
- thai:[.22,.32],halal:[.31,.32],veg:[.40,.32],snacks:[.49,.32],water:[.58,.32],afteryou:[.67,.32],
- merch:[.37,.59],clubs:[.47,.59],community:[.57,.59],telco:[.67,.59],bank:[.77,.59],
- milo:[.37,.72],ichitan:[.47,.72],tao:[.57,.72],ais:[.67,.72]
+// Each zone has one row of numbered plots. A stall keeps its plot until moved or removed.
+const mapRows={
+ food:{first:.202,last:.791,y:.37,prefix:'F',name:'Food court'},
+ market:{first:.352,last:.796,y:.677,prefix:'M',name:'Market'}
 };
-const plotZones={food:[.22,.78,.30,.43],market:[.34,.79,.57,.73]};
-// Older saves keep their budgets and bookings, but adopt the corrected campus layout.
-if(s.mapLayout!==2){s.placements={};s.mapLayout=2;}
+const mapPlots=Object.fromEntries(entries(mapRows).map(([zone,row])=>[
+ zone,Array.from({length:zoneCaps[zone]},(_,index)=>({
+  id:row.prefix+(index+1),zone,x:row.first+(row.last-row.first)*index/(zoneCaps[zone]-1),y:row.y
+ }))
+]));
+const plotsById=Object.fromEntries(Object.values(mapPlots).flat().map(plot=>[plot.id,plot]));
 const mapPalette=['#ffb570','#f2ce6c','#83d5bc','#bda3ff','#87bcf1','#ed9cb7'];
 let selectedPlot=null;
 let mapCanvas=null;
 let mapFrame=0;
 let mapDrag=null;
 let mapTime=0;
-s.placements=s.placements||{};
+
 function placedItems(){
- return [...active('stalls').map(k=>({key:k,type:'stalls',name:stalls[k][0],zone:stalls[k][5]})),...active('sponsors').map(k=>({key:k,type:'sponsors',name:sponsors[k][0],zone:sponsors[k][4]}))];
+ return [
+  ...active('stalls').map(key=>({key,name:stalls[key][0],zone:stalls[key][5]})),
+  ...active('sponsors').map(key=>({key,name:sponsors[key][0],zone:sponsors[key][4]}))
+ ];
 }
-function coords(item){
- const assigned=new Map();
+function syncMapPlots(){
+ const previous=s.placements||{};
+ const next={};
+ const occupied=new Set();
  const items=placedItems();
- for(const entry of items){
-  const position=s.placements[entry.key]||mapPositions[entry.key];
-  if(position)assigned.set(entry.key,position);
+ // Keep valid assignments first. Old saves stored coordinates; preserve their approximate position.
+ for(const item of items){
+  const id=previous[item.key];
+  if(typeof id==='string'&&plotsById[id]?.zone===item.zone&&!occupied.has(id)){
+   next[item.key]=id;
+   occupied.add(id);
+  }
  }
- const rows=item.zone==='food'?[.32,.43]:[.59,.72];
- const columns=item.zone==='food'?[.22,.31,.40,.49,.58,.67,.76]:[.37,.47,.57,.67,.77];
- const candidates=rows.flatMap(y=>columns.map(x=>[x,y]));
- for(const entry of items){
-  if(entry.zone!==item.zone||assigned.has(entry.key))continue;
-  const free=candidates.find(([x,y])=>![...assigned.values()].some(([a,b])=>Math.abs(x-a)<.078&&Math.abs(y-b)<.102));
-  assigned.set(entry.key,free||candidates[0]);
+ for(const item of items){
+  if(next[item.key])continue;
+  const available=mapPlots[item.zone].filter(plot=>!occupied.has(plot.id));
+  const old=previous[item.key];
+  if(Array.isArray(old)&&Number.isFinite(old[0]))available.sort((a,b)=>Math.abs(a.x-old[0])-Math.abs(b.x-old[0]));
+  if(available.length){
+   next[item.key]=available[0].id;
+   occupied.add(available[0].id);
+  }
  }
- return assigned.get(item.key);
+ s.placements=next;
 }
 function mapShell(){
  const root=document.createElement('section');
  root.id='festival-world';
- root.innerHTML='<div class="world-top"><div><small>FESTIVAL GROUNDS</small><strong>SISB FEST</strong></div><div class="world-actions"><button id="map-build">＋ Build stalls</button><button id="map-crew">Manage crew</button><button id="map-play">▶ Preview crowd</button></div></div><div class="world-canvas"><canvas id="festival-canvas" aria-label="Interactive festival grounds. Select a stall then select its new location." tabindex="0"></canvas><div class="world-tip">Drag stalls to move them · Tap a stall for controls</div><div id="plot-panel" class="plot-panel"></div></div><div class="world-bottom"><span>● Food court</span><span>● Market & sponsors</span><span id="map-status" role="status">Select a booth or build your first stalls.</span></div>';
+ root.innerHTML='<div class="world-top"><div><small>FESTIVAL GROUNDS</small><strong>SISB FEST</strong></div><div class="world-actions"><button id="map-build">＋ Build stalls</button><button id="map-crew">Manage crew</button><button id="map-play">▶ Preview crowd</button></div></div><div class="world-canvas"><canvas id="festival-canvas" aria-label="Interactive festival grounds with one row of plots per zone. Select a stall below for move controls."></canvas></div><div class="world-bottom"><span>● Food court</span><span>● Market & sponsors</span><span id="map-status" role="status"></span><label class="world-stall-picker">Select a stall<select id="map-stall"><option value="">Choose a stall</option></select></label></div><div id="plot-panel" class="plot-panel"></div>';
  app.prepend(root);
  mapCanvas=byId('festival-canvas');
+ mapDrag=null;
  mapCanvas.addEventListener('pointerdown',mapDown);
  mapCanvas.addEventListener('pointermove',mapMove);
  mapCanvas.addEventListener('pointerup',mapUp);
  mapCanvas.addEventListener('pointercancel',()=>{mapDrag=null;});
+ mapCanvas.addEventListener('lostpointercapture',()=>{mapDrag=null;});
+ const items=placedItems();
+ const picker=byId('map-stall');
+ for(const item of items){
+  const slot=s.placements[item.key];
+  if(slot)picker.add(new Option(slot+' · '+item.name,item.key));
+ }
+ picker.disabled=!items.some(item=>s.placements[item.key]);
+ picker.onchange=()=>showPlot(items.find(item=>item.key===picker.value));
+ byId('map-status').textContent=items.length>Object.keys(s.placements).length
+  ?'This saved plan exceeds the plot limit. Remove extra booths in Stalls & sponsors.'
+  :picker.disabled?'Build stalls to add them to the map.':'Drag a stall to a numbered plot, or use the controls below.';
+ showPlot(items.find(item=>item.key===selectedPlot&&s.placements[item.key]));
  byId('map-build').onclick=()=>{if(s.phase>=5){byId('map-status').textContent='The event has opened. Use the control room below.';return;}if(s.phase>=3)s.tickets=null;s.phase=2;refresh();byId('build-drawer').scrollIntoView({behavior:'smooth',block:'start'});};
  byId('map-crew').onclick=()=>{if(s.phase!==4){byId('map-status').textContent='Confirm ticket sales before assigning the event team.';return;}s.phase=4;refresh();};
  byId('map-play').textContent=s.mapPreview?'❚❚ Pause crowd':'▶ Preview crowd';
  byId('map-play').onclick=()=>{s.mapPreview=!s.mapPreview;byId('map-play').textContent=s.mapPreview?'❚❚ Pause crowd':'▶ Preview crowd';save();};
  mapLoop();
 }
-function mapPoint(e){const r=mapCanvas.getBoundingClientRect();return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height];}
-function hitMap(p){return placedItems().slice().reverse().find(i=>{const q=coords(i);return Math.abs(p[0]-q[0])<.044&&Math.abs(p[1]-q[1])<.057;});}
-function mapDown(e){
- const p=mapPoint(e),item=hitMap(p);
- if(item){selectedPlot=item.key;mapDrag={item,start:p,current:p};mapCanvas.setPointerCapture(e.pointerId);showPlot(item);}
- else if(selectedPlot){const chosen=placedItems().find(i=>i.key===selectedPlot);if(chosen)movePlot(chosen,p);}
+function mapPoint(e){
+ const r=mapCanvas.getBoundingClientRect();
+ return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height];
 }
-function mapMove(e){if(mapDrag)mapDrag.current=mapPoint(e);}
-function mapUp(e){if(!mapDrag)return;const p=mapPoint(e);if(Math.hypot(p[0]-mapDrag.start[0],p[1]-mapDrag.start[1])>.01)movePlot(mapDrag.item,p);mapDrag=null;}
-function movePlot(item,p){
- if(s.phase>=5){byId('map-status').textContent='The site is open. Reposition booths during planning.';return;}
- const zone=plotZones[item.zone];
- if(p[0]<zone[0]||p[0]>zone[1]||p[1]<zone[2]||p[1]>zone[3]){byId('map-status').textContent='Place this booth inside the '+item.zone+' area. Keep the paths clear.';return;}
- if(placedItems().some(i=>i.key!==item.key&&Math.abs(coords(i)[0]-p[0])<.078&&Math.abs(coords(i)[1]-p[1])<.102)){byId('map-status').textContent='That space is occupied. Choose a clear spot.';return;}
- s.placements[item.key]=p.map(n=>Math.round(n*1000)/1000);save();showPlot(item);
- byId('map-status').textContent=item.name+' moved. Sales forecast updated.';
- const k=app.querySelector('.kpi strong');if(k)k.textContent=money(available());
+function mapPlotAt([x,y]){
+ for(const plots of Object.values(mapPlots)){
+  if(Math.abs(y-plots[0].y)>.072)continue;
+  const spacing=plots[1].x-plots[0].x;
+  const index=Math.round((x-plots[0].x)/spacing);
+  if(plots[index])return plots[index];
+ }
+ return null;
+}
+function mapDown(e){
+ if(e.button!==0||mapDrag)return;
+ const plot=mapPlotAt(mapPoint(e));
+ if(!plot)return;
+ const items=placedItems();
+ const item=items.find(item=>s.placements[item.key]===plot.id);
+ if(item)showPlot(item);
+ const selected=item||items.find(entry=>entry.key===selectedPlot);
+ if(!selected||s.phase>=5)return;
+ mapDrag={
+  item:selected,pointerId:e.pointerId,target:null,moved:false,
+  tapTarget:item?null:plot.id,startX:e.clientX,startY:e.clientY
+ };
+ mapCanvas.setPointerCapture(e.pointerId);
+}
+function mapMove(e){
+ if(mapDrag?.pointerId!==e.pointerId)return;
+ if(Math.hypot(e.clientX-mapDrag.startX,e.clientY-mapDrag.startY)>5)mapDrag.moved=true;
+ const plot=mapPlotAt(mapPoint(e));
+ mapDrag.target=!mapDrag.tapTarget&&mapDrag.moved&&plot?.zone===mapDrag.item.zone?plot.id:null;
+}
+function mapUp(e){
+ if(mapDrag?.pointerId!==e.pointerId)return;
+ mapMove(e);
+ const {item,target,moved,tapTarget}=mapDrag;
+ mapDrag=null;
+ if(tapTarget){if(!moved)movePlot(item,tapTarget);}
+ else if(moved)movePlot(item,target);
+}
+function movePlot(item,id){
+ const from=s.placements[item?.key];
+ if(!from||s.phase>=5)return;
+ const status=byId('map-status');
+ if(plotsById[id]?.zone!==item.zone){status.textContent='Choose a numbered plot in the '+mapRows[item.zone].name+'.';return;}
+ if(id===from)return;
+ const items=placedItems();
+ const other=items.find(entry=>s.placements[entry.key]===id);
+ s.placements[item.key]=id;
+ if(other)s.placements[other.key]=from;
+ const picker=byId('map-stall');
+ for(const option of picker.options){
+  const entry=items.find(entry=>entry.key===option.value);
+  if(entry)option.textContent=s.placements[entry.key]+' · '+entry.name;
+ }
+ save();
+ showPlot(item,true);
+ status.textContent=other?'Swapped '+item.name+' and '+other.name+'.':item.name+' moved to '+id+'.';
 }
 function plotExposure(item){
- const p=coords(item);
- return Math.max(.75,1.15-Math.abs(p[0]-.70)*.5-Math.abs(p[1]-(item.zone==='food'?.39:.57))*.5);
+ const plot=plotsById[s.placements?.[item.key]];
+ if(!plot)return 1;
+ return Math.max(.75,1.15-Math.abs(plot.x-.70)*.5-Math.abs(plot.y-(item.zone==='food'?.39:.57))*.5);
 }
-function showPlot(item){
+function showPlot(item,restoreFocus=false){
  const panel=byId('plot-panel');
- panel.innerHTML='<button class="plot-close" aria-label="Close stall controls">×</button><small>'+item.zone.toUpperCase()+'</small><h3>'+item.name+'</h3><p>Footfall '+Math.round(plotExposure(item)*100)+'%<br>Drag this booth within its zone.</p><div class="actions"><button data-nudge="left">←</button><button data-nudge="up">↑</button><button data-nudge="down">↓</button><button data-nudge="right">→</button></div>';
- panel.querySelector('.plot-close').onclick=()=>{selectedPlot=null;panel.innerHTML='';};
- panel.querySelectorAll('[data-nudge]').forEach(b=>b.onclick=()=>{const p=[...coords(item)], d=b.dataset.nudge;if(d==='left')p[0]-=.035;if(d==='right')p[0]+=.035;if(d==='up')p[1]-=.035;if(d==='down')p[1]+=.035;movePlot(item,p);});
+ const refocus=restoreFocus&&panel.contains(document.activeElement);
+ selectedPlot=item?.key||null;
+ byId('map-stall').value=selectedPlot||'';
+ if(!item){panel.innerHTML='';return;}
+ const current=s.placements[item.key];
+ panel.innerHTML='<button class="plot-close" aria-label="Close stall controls">×</button><small>'+mapRows[item.zone].name+' · Plot '+current+'</small><h3>'+item.name+'</h3><p>Footfall '+Math.round(plotExposure(item)*100)+'%</p>';
+ panel.querySelector('.plot-close').onclick=()=>{showPlot();byId('map-stall').focus();};
+ if(s.phase>=5)return;
+ const items=placedItems();
+ const options=mapPlots[item.zone].filter(plot=>plot.id!==current).map(plot=>{
+  const other=items.find(entry=>s.placements[entry.key]===plot.id);
+  return '<option value="'+plot.id+'">'+plot.id+(other?' · Swap with '+other.name:' · Empty')+'</option>';
+ });
+ panel.insertAdjacentHTML('beforeend','<div class="plot-controls"><label>Destination<select id="map-destination">'+options.join('')+'</select></label><button id="map-move">Move or swap</button></div>');
+ byId('map-move').onclick=()=>movePlot(item,byId('map-destination').value);
+ if(refocus)byId('map-destination').focus();
 }
 function mapLoop(){
  cancelAnimationFrame(mapFrame);
@@ -948,7 +1059,7 @@ function drawWorld(){
  building(.41,.07,.36,.20,'SPORTS COMPLEX','');
  pool(.84,.09,.13,.17,'Primary');
  // Larger playable zones directly below the sports buildings.
- rect(.17,.27,.65,.19,'#e9dfb1',12);
+ rect(.17,.28,.65,.18,'#e9dfb1',12);
  rect(.325,.54,.50,.28,'#c9dfb6',12);
  text('FOOD & DRINK BOOTHS',.50,.285,11);
  text('STUDENT MARKET + SPONSORS',.58,.558,10);
@@ -994,18 +1105,29 @@ function drawWorld(){
    c.fillStyle=['#f6a97b','#597bb9','#f6e7a2','#9e79af'][i%4];c.beginPath();c.arc(x(a),y(b),3.5,0,Math.PI*2);c.fill();
   }
  }
- placedItems().forEach((item,i)=>{
-  const pos=mapDrag?.item.key===item.key?mapDrag.current:coords(item),a=pos[0],b=pos[1],color=mapPalette[i%mapPalette.length];
-  rect(a-.038,b-.027,.081,.075,'#254b4330',5);
-  rect(a-.041,b-.052,.078,.066,'#fff4dc',4);
-  rect(a-.045,b-.061,.086,.032,color,4);
-  for(let j=0;j<4;j++)rect(a-.043+j*.022,b-.061,.011,.032,'#ffffff70',0);
-  rect(a-.031,b+.004,.057,.016,'#87674d',2);
-  if(selectedPlot===item.key){c.strokeStyle='#fff';c.lineWidth=3;c.strokeRect(x(a-.05),y(b-.07),x(.1),y(.12));}
-  const title=item.name.length>18?item.name.slice(0,16)+'…':item.name;
-  text(title,a,b+.075,Math.max(9,Math.min(12,w/90)));
-  if(s.mapPreview)for(let j=0;j<Math.round(plotExposure(item)*4);j++){c.fillStyle='#526489';c.beginPath();c.arc(x(a+(j%2)*.011),y(b+.10+Math.floor(j/2)*.014),2.5,0,7);c.fill();}
- });
+ const occupants=new Map(placedItems().map((item,index)=>[s.placements[item.key],{item,index}]));
+ for(const plot of Object.values(mapPlots).flat()){
+  const {x:a,y:b,id}=plot;
+  const occupant=occupants.get(id);
+  const target=mapDrag?.target===id;
+  const selected=occupant&&selectedPlot===occupant.item.key;
+  rect(a-.024,b-.052,.048,.112,target?'#fff1af':selected?'#fff6da':'#365a4c20',5);
+  if(occupant){
+   const {item,index}=occupant;
+   const color=mapPalette[index%mapPalette.length];
+   rect(a-.018,b-.020,.037,.038,'#fff4dc',3);
+   rect(a-.021,b-.036,.042,.023,color,3);
+   for(let j=0;j<3;j++)rect(a-.018+j*.014,b-.036,.006,.023,'#ffffff70',0);
+   rect(a-.013,b+.008,.026,.008,'#87674d',2);
+   if(w>=850){
+    c.font='800 10px system-ui';
+    let title=item.name;
+    while(title.length>1&&c.measureText(title+'…').width>x(.044))title=title.slice(0,-1);
+    text(title===item.name?title:title.trimEnd()+'…',a,b+.054,10);
+   }
+  }
+  text(id,a,b+(occupant ? .034 : .012),w<600?8:10);
+ }
  text('SISB CAMPUS · BUILDINGS COMPRESSED / BOOTH AREAS ENLARGED',.5,.98,9,'#365a4c');
 }
 
