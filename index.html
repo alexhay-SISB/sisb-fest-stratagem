@@ -429,7 +429,7 @@ button:focus-visible{outline:3px solid #7144a4;outline-offset:3px}
 <ol class="guide-steps" start="1">
 <li>Scroll to the stall cards under <strong>Build the market and food court</strong>. On each food stall below, click <strong>Reserve spaces</strong> once. A tick means the stall is reserved. Click a ticked button again to remove that stall.</li>
 </ol>
-<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">Food stall card</th><th scope="col">Spaces</th></tr></thead><tbody><tr><td>Halal chicken biryani &amp; beef satay</td><td>2</td></tr><tr><td>Tofu pad kra pao &amp; vegetable spring rolls</td><td>2</td></tr><tr><td>Mango sticky rice &amp; coconut ice cream</td><td>2</td></tr><tr><td>Pad kra pao chicken with fried egg</td><td>1</td></tr><tr><td>Boat noodles with beef &amp; morning glory</td><td>2</td></tr><tr><td>Thai milk tea &amp; brown-sugar boba</td><td>1</td></tr><tr><td>Watermelon slush &amp; pineapple cups</td><td>1</td></tr><tr><td>Banana roti with condensed milk</td><td>1</td></tr></tbody></table></div>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">Food stall card</th><th scope="col">Spaces</th></tr></thead><tbody><tr><td>Halal chicken biryani &amp; beef satay</td><td>2</td></tr><tr><td>Khanom krok (coconut pancakes) &amp; crispy Thai crepes</td><td>2</td></tr><tr><td>Mango sticky rice &amp; coconut ice cream</td><td>2</td></tr><tr><td>Pad kra pao chicken with fried egg</td><td>1</td></tr><tr><td>Boat noodles with beef &amp; morning glory</td><td>2</td></tr><tr><td>Thai milk tea &amp; brown-sugar boba</td><td>1</td></tr><tr><td>Watermelon slush &amp; pineapple cups</td><td>1</td></tr><tr><td>Banana roti with condensed milk</td><td>1</td></tr></tbody></table></div>
 <ol class="guide-steps" start="2">
 <li>Check <strong>Food court 12/12 booth spaces</strong>. This example gives 1,675 servings per session before any adjustment for location or staffing. Rent on the stall cards is money the festival receives.</li>
 </ol>
@@ -615,7 +615,7 @@ button:focus-visible{outline:3px solid #7144a4;outline-offset:3px}
 <ol class="guide-steps" start="1">
 <li>在 <strong>Build the market and food court</strong>（布置市集和美食区）下方，找到下表的八个餐饮摊位。每个摊位点击一次 <strong>Reserve spaces</strong>（预留摊位）。有勾表示已选，再点一次可取消。</li>
 </ol>
-<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">餐饮摊位卡片</th><th scope="col">占用格数</th></tr></thead><tbody><tr><td>Halal chicken biryani &amp; beef satay</td><td>2</td></tr><tr><td>Tofu pad kra pao &amp; vegetable spring rolls</td><td>2</td></tr><tr><td>Mango sticky rice &amp; coconut ice cream</td><td>2</td></tr><tr><td>Pad kra pao chicken with fried egg</td><td>1</td></tr><tr><td>Boat noodles with beef &amp; morning glory</td><td>2</td></tr><tr><td>Thai milk tea &amp; brown-sugar boba</td><td>1</td></tr><tr><td>Watermelon slush &amp; pineapple cups</td><td>1</td></tr><tr><td>Banana roti with condensed milk</td><td>1</td></tr></tbody></table></div>
+<div class="guide-table" tabindex="0"><table><thead><tr><th scope="col">餐饮摊位卡片</th><th scope="col">占用格数</th></tr></thead><tbody><tr><td>Halal chicken biryani &amp; beef satay</td><td>2</td></tr><tr><td>Khanom krok (coconut pancakes) &amp; crispy Thai crepes</td><td>2</td></tr><tr><td>Mango sticky rice &amp; coconut ice cream</td><td>2</td></tr><tr><td>Pad kra pao chicken with fried egg</td><td>1</td></tr><tr><td>Boat noodles with beef &amp; morning glory</td><td>2</td></tr><tr><td>Thai milk tea &amp; brown-sugar boba</td><td>1</td></tr><tr><td>Watermelon slush &amp; pineapple cups</td><td>1</td></tr><tr><td>Banana roti with condensed milk</td><td>1</td></tr></tbody></table></div>
 <ol class="guide-steps" start="2">
 <li>确认页面显示 <strong>Food court 12/12 booth spaces</strong>。本例每场基础供应量为 1,675 份，位置和人员安排还会影响实际供应量。摊位卡片上的租金是校园节获得的收入。</li>
 </ol>
@@ -782,7 +782,7 @@ function safeLegacyProgramme(){try{const saved=JSON.parse(localStorage.getItem('
 const stalls={
  thai:['Chicken pad Thai & grilled pork skewers',4,52000,520,120,'food'],
  halal:['Halal chicken biryani & beef satay',2,29000,275,70,'food'],
- veg:['Tofu pad kra pao & vegetable spring rolls',2,23500,225,75,'food'],
+ veg:['Khanom krok (coconut pancakes) & crispy Thai crepes',2,23500,225,75,'food'],
  snacks:['Mango sticky rice & coconut ice cream',2,25000,245,45,'food'],
  merch:['Student-designed tote bags & enamel pins',2,33000,0,85,'market'],
  clubs:['Ring toss & beanbag target throw',3,24000,0,125,'market'],
@@ -1152,7 +1152,7 @@ function paintCardArt(){
   c.fillStyle=gradient;c.fillRect(0,0,600,240);
   c.fillStyle='#ffffff12';
   for(let i=0;i<5;i++){c.beginPath();c.moveTo(80+i*120,0);c.lineTo(-150+i*160,240);c.lineTo(120+i*160,240);c.closePath();c.fill();}
-  const food=/rice|noodles|chicken|pork|tofu|taco|roti|boba|fruit|milk|dessert|tea|bao|tteok|slush|satay|ice cream/.test(title);
+  const food=/rice|noodles|chicken|pork|khanom krok|taco|roti|boba|fruit|milk|dessert|tea|bao|tteok|slush|satay|ice cream/.test(title);
   const game=/basket|darts|football|tower|ring toss|beanbag|game|quiz/.test(title);
   if(food){
    c.fillStyle='#fff0c9';c.beginPath();c.ellipse(300,167,128,46,0,0,7);c.fill();
