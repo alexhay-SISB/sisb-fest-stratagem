@@ -271,12 +271,27 @@ button:focus-visible{outline:3px solid #7144a4;outline-offset:3px}
 .plot-controls select,.world-stall-picker select{width:100%;min-width:0;background:#fffdf5;color:#234c43;border-color:#758d80}
 .world-stall-picker{flex:1 1 100%;max-width:34rem}
 </style>
+<style>
+.mast .tools #reset-game,.reset-confirm{background:#812f46;color:#fff7f4;border-color:#812f46}
+.mast .tools #reset-game:hover,.reset-confirm:hover:not(:disabled){background:#642236;color:white;border-color:#642236}
+#reset-dialog{width:min(460px,calc(100% - 30px));box-sizing:border-box;border-radius:18px;padding:24px}
+#reset-dialog::backdrop{background:#29203b99}
+#reset-dialog .actions{justify-content:flex-end}
+</style>
 </head>
 <body>
-<header class="mast"><div class="shell"><div class="wordmark"><span class="mark" aria-hidden="true"></span><h1>SISB Fest Stratagem</h1></div><div class="tools"><button data-ui="map">Campus map</button><button data-ui="help">How to play</button><button data-ui="reset">Restart</button></div></div></header>
+<header class="mast"><div class="shell"><div class="wordmark"><span class="mark" aria-hidden="true"></span><h1>SISB Fest Stratagem</h1></div><div class="tools"><button data-ui="map">Campus map</button><button data-ui="help">How to play</button><button id="reset-game" type="button" data-ui="reset" aria-haspopup="dialog">Reset game</button></div></div></header>
 <main class="shell"><div id="app"></div></main>
+<dialog id="reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
+ <h2 id="reset-title">Reset this game?</h2>
+ <p id="reset-description">This clears your progress in this browser and starts a new festival with ฿3.1 million.</p>
+ <form method="dialog" class="actions">
+  <button type="submit" autofocus>Keep playing</button>
+  <button type="button" class="reset-confirm" data-ui="reset-confirm">Reset game</button>
+ </form>
+</dialog>
 <dialog id="map"><form method="dialog"><button>Close map</button></form><h2>Official 2025 event map</h2><p>Use the school’s map to orient your team. Gate 5 at Mugs and Hugs is the published access point. Simulator zones, limits and timings are planning assumptions.</p><a id="maplink" target="_blank" rel="noopener"><img id="mapimage" alt="Official SISB Fest 2025 campus event map"></a><p><a href="https://sites.google.com/sisbschool.com/sisbfest/about-sisb-fest/2025" target="_blank" rel="noopener">Open the school's map and archive</a></p></dialog>
-<dialog id="help"><form method="dialog"><button>Close guide</button></form><h2>Run the festival</h2><p>Play in teams. Decide who runs Finance, Programme and Operations. Discuss each phase, then lock it in. You begin with a maximum starting budget of ฿3.1 million. Borrow up to ฿1 million separately, with an 8% finance fee. Earn additional money from ticket sales, stalls and sponsors. For a win, admit 3,001 or more people, finish safely and raise at least ฿100,000 for charity after covering your costs.</p><p>Allow roughly 5 min to start, 12 min for bids, 13 min for scheduling, 13 min for stalls and sponsorship, 11 min for ticketing, 13 min for staffing, 15 min for live decisions and 8 min for debrief. Ask teams to defend one safety decision and explain which expense or sponsor made the biggest difference.</p><p>Real artist names and releases are used as classroom examples. Bids, availability, sponsors, costs, capacities and audience figures are fictional. The attendance goal measures total entries across two sessions, while operating limits apply at any one time.</p>
+<dialog id="help"><form method="dialog"><button>Close guide</button></form><h2>Run the festival</h2><p>Use one device and one game tab per team. Every team opens the same link and plays its own festival. Decide who runs Finance, Programme and Operations. Discuss each phase, then lock it in. You begin with a maximum starting budget of ฿3.1 million. Borrow up to ฿1 million separately, with an 8% finance fee. Earn additional money from ticket sales, stalls and sponsors. For a win, admit 3,001 or more people, finish safely and raise at least ฿100,000 for charity after covering your costs.</p><p>Allow roughly 5 min to start, 12 min for bids, 13 min for scheduling, 13 min for stalls and sponsorship, 11 min for ticketing, 13 min for staffing, 15 min for live decisions and 8 min for debrief. Ask teams to defend one safety decision and explain which expense or sponsor made the biggest difference.</p><p>Real artist names and releases are used as classroom examples. Bids, availability, sponsors, costs, capacities and audience figures are fictional. The attendance goal measures total entries across two sessions, while operating limits apply at any one time.</p>
 <ul><li><a href="https://sites.google.com/sisbschool.com/sisbfest/home">SISB Fest home</a>, <a href="https://sites.google.com/sisbschool.com/sisbfest/about-sisb-fest/2025">2025 event and map</a>, <a href="https://sites.google.com/sisbschool.com/sisbfest/location">campus access at Gate 5</a></li>
 <li><a href="https://www.hse.gov.uk/event-safety/crowd-management-assess.htm">Crowd risk and safe capacity</a>, <a href="https://www.hse.gov.uk/event-safety/incidents-and-emergencies.htm">incident and emergency planning</a>, <a href="https://www.food.gov.uk/safety-hygiene/providing-food-at-community-and-charity-events">food hygiene and allergens at community events</a>. These are design references for the simulator.</li>
 <li><a href="https://www.tillybirds.com/discography">Tilly Birds</a>, <a href="https://music.apple.com/us/album/my-chainz-single/1894976005">4EVE</a>, <a href="https://www.starship-ent.com/newrelease">IVE and CRAVITY</a>, <a href="https://straykids.jype.com/Mobile/DiscographyView?AamSeq=280">Stray Kids</a></li><li><a href="https://www.ichitangroup.com/en/products-and-brands">Ichitan product portfolio</a>, <a href="https://www.investor.afteryoudessertcafe.com/en/home">After You</a>, <a href="https://shoponline.taokaenoi.co.th/index.php?controller=category&amp;id_category=22&amp;id_lang=1">Tao Kae Noi</a>, <a href="https://www.ais.th/about-us/pr-news/zeed-5g-esport">AIS esports</a> and <a href="https://news.xbox.com/en-us/2024/11/06/planet-coaster-2-tips/">Frontier’s Planet Coaster 2 guest-flow and retail guidance</a>. Sponsor deals and offers in the game are fictional.</li></ul></dialog>
@@ -794,7 +809,18 @@ document.addEventListener('click',e=>{
  refresh();return;
  }
  if(d.ui==='map'||d.ui==='help'){byId(d.ui).showModal();return;}
- if(d.ui==='reset'){if(window.confirm('Restart and clear this festival plan?')){s=newGame();refresh(true);}return;}
+ if(d.ui==='reset'){byId('reset-dialog').showModal();return;}
+ if(d.ui==='reset-confirm'){
+  byId('reset-dialog').close();
+  s=newGame();
+  selectedPlot=null;
+  mapDrag=null;
+  mapTime=0;
+  refresh();
+  byId('reset-game').focus({preventScroll:true});
+  window.scrollTo({top:0,behavior:'instant'});
+  return;
+ }
  if(b.id==='next'){next();return;}
  if('back' in d&&s.phase>0&&s.phase<5){s.phase--;if(s.phase<=3)s.tickets=null;refresh(true);return;}
  if(d.concession)s.concession=d.concession;
